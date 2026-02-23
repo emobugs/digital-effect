@@ -50,7 +50,7 @@ export default function Services() {
 						<span className="text-gradient">Услуги</span>
 					</h2>
 				</div>
-				<p className="max-w-sm text-[15px] text-white/50 leading-relaxed text-center md:text-left">
+				<p className="hidden md:block max-w-sm text-[15px] text-white/50 leading-relaxed text-center md:text-left">
 					Управление на социални мрежи, видео съдържание и дигитална стратегия <br />-
 					всичко под един покрив.
 				</p>
