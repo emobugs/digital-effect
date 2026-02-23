@@ -47,7 +47,7 @@ function StatCell({
 		<motion.div
 			ref={ref}
 			variants={container}
-			className="relative bg-dark-surface px-11 py-14 overflow-hidden group"
+			className="relative bg-dark-surface md:px-11 md:py-19 p-8 overflow-hidden group"
 		>
 			{/* Gradient top line — анимира се при влизане във viewport */}
 			<motion.div
@@ -56,8 +56,8 @@ function StatCell({
 			/>
 
 			<div
-				className="font-display  font-black text-gradient leading-none"
-				style={{ fontSize: "clamp(36px, 4.5vw, 66px)" }}
+				className="font-display font-black text-gradient leading-none"
+				style={{ fontSize: "clamp(30px, 4.5vw, 66px)" }}
 			>
 				{value}
 				{suffix}
