@@ -12,6 +12,8 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 export default function Problem() {
 	const container = useRef<HTMLElement>(null);
 
+	const mm = gsap.matchMedia();
+
 	useGSAP(
 		() => {
 			gsap.from(".prob-left", {
@@ -28,7 +30,8 @@ export default function Problem() {
 			gsap.from(".prob-right", {
 				opacity: 0,
 				x: 40,
-				duration: 0.7,
+				duration: 1,
+				delay: 1.6,
 				ease: "power2.out",
 				scrollTrigger: {
 					trigger: container.current,
@@ -39,44 +42,79 @@ export default function Problem() {
 			gsap.from(".prob-item", {
 				opacity: 0,
 				x: -20,
-				duration: 0.5,
-				stagger: 0.08,
+				duration: 0.8,
+				stagger: 0.25,
 				ease: "power2.out",
 				scrollTrigger: {
 					trigger: ".prob-items",
-					start: "top 80%",
+					start: "top 75%",
 				},
 			});
 
-			gsap.from(".sol-item", {
-				opacity: 0,
-				x: 20,
-				duration: 0.5,
-				stagger: 0.08,
-				ease: "power2.out",
-				scrollTrigger: {
-					trigger: ".sol-items",
-					start: "top 80%",
-				},
+			// gsap.from(".sol-item", {
+			// 	opacity: 0,
+			// 	x: 20,
+			// 	duration: 0.8,
+			// 	stagger: 0.25,
+			// 	ease: "power2.out",
+			// 	delay: 1.5,
+			// 	scrollTrigger: {
+			// 		trigger: ".sol-items",
+			// 		start: "top 75%",
+			// 	},
+			// });
+			mm.add("(max-width: 767px)", () => {
+				// Мобилен — всяка карта индивидуално
+				gsap.from(".sol-item", {
+					opacity: 0,
+					x: 20,
+					duration: 0.8,
+					stagger: 0.25,
+					ease: "power2.out",
+					delay: 0.5,
+					scrollTrigger: {
+						trigger: ".sol-items",
+						start: "top 75%",
+					},
+				});
+			});
+			mm.add("(min-width: 768px)", () => {
+				// Мобилен — всяка карта индивидуално
+				gsap.from(".sol-item", {
+					opacity: 0,
+					x: 20,
+					duration: 0.8,
+					stagger: 0.25,
+					ease: "power2.out",
+					delay: 1.5,
+					scrollTrigger: {
+						trigger: ".sol-items",
+						start: "top 75%",
+					},
+				});
 			});
 		},
 		{ scope: container },
 	);
 
 	return (
-		<section ref={container} id="problem" className="py-36 px-16 bg-dark-surface">
+		<section
+			ref={container}
+			id="problem"
+			className="py-8 md:py-36 px-8 md:px-16 bg-dark-surface"
+		>
 			<div className="grid lg:grid-cols-2 gap-24 items-center">
 				{/* LEFT — Проблеми */}
 				<div className="prob-left">
-					<span className="section-label">Познаваш ли ги?</span>
-					<h2 className="section-title mb-8">
+					<span className="section-label md:text-left text-center">Познаваш ли ги?</span>
+					<h2 className="section-title mb-8 md:text-left text-center">
 						Проблемите,
 						<br />
 						които <span className="text-gradient">спират</span>
 						<br />
 						бизнеса ти
 					</h2>
-					<p className="text-[15px] text-white/50 leading-relaxed mb-8">
+					<p className="text-[15px] text-white/50 leading-relaxed mb-8 md:text-left text-center">
 						Много бизнеси губят клиенти и пари заради липса на стратегия онлайн.
 					</p>
 
