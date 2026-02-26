@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -20,23 +20,48 @@ const ICONS = {
 
 export default function Services() {
 	const container = useRef<HTMLElement>(null);
+	useEffect(() => {
+		const el = container.current;
+		if (!el) return;
 
-	useGSAP(
-		() => {
-			gsap.from(".svc-card", {
-				opacity: 0,
-				y: 40,
-				duration: 0.6,
-				stagger: 0.08,
-				ease: "power2.out",
-				scrollTrigger: {
-					trigger: ".svc-grid",
-					start: "top 80%",
+		const mm = gsap.matchMedia();
+
+		const cards = el.querySelectorAll(".card-feature");
+
+		mm.add("(max-width: 767px)", () => {
+			// Мобилен — всяка карта индивидуално
+			el.querySelectorAll(".card-feature").forEach((card) => {
+				gsap.set(card, { opacity: 0, y: 50 });
+				ScrollTrigger.create({
+					trigger: card,
+					start: "top 85%",
+					onEnter: () => {
+						gsap.to(card, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
+					},
+				});
+			});
+		});
+
+		mm.add("(min-width: 768px)", () => {
+			// Десктоп — всички заедно staggered
+			const cards = el.querySelectorAll(".card-feature");
+			gsap.set(cards, { opacity: 0, y: 50 });
+			ScrollTrigger.create({
+				trigger: el,
+				start: "top 45%",
+				onEnter: () => {
+					gsap.to(cards, {
+						opacity: 1,
+						y: 0,
+						duration: 0.6,
+						stagger: 0.2,
+						ease: "power2.out",
+					});
 				},
 			});
-		},
-		{ scope: container },
-	);
+		});
+		return () => mm.revert();
+	}, []);
 
 	return (
 		<section ref={container} id="services" className="p-16 px-8 md:px-16">
@@ -63,10 +88,10 @@ export default function Services() {
 					return (
 						<div
 							key={svc.num}
-							className="svc-card relative p-10 border border-white/[0.07] group overflow-hidden cursor-default"
+							className="svc-card card-feature relative p-10 border border-white/[0.07] group overflow-hidden cursor-default"
 						>
 							{/* Bottom gradient line on hover */}
-							<div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
+							{/* <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" /> */}
 
 							<div className="w-12 h-12 rounded-xl border border-white/[0.07] bg-white/[0.03] flex items-center justify-center mb-7 group-hover:border-[#f26522]/30 group-hover:bg-[#f26522]/[0.07] transition-all duration-300">
 								<Icon className="w-5 h-5 text-[#f26522]" />
