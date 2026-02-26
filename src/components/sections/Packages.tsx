@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -86,6 +86,101 @@ const PACKAGES = [
 		],
 	},
 ];
+
+function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
+	const isAuto = pkg.name === "Автоматизация";
+
+	return (
+		<div
+			className={`pkg-card border overflow-hidden ${isAuto ? "border-violet-500/20" : "border-white/[0.08]"}`}
+		>
+			<div
+				className={`h-[3px] bg-gradient-to-r ${isAuto ? "from-violet-700 via-purple-500 to-violet-400" : pkg.gradient}`}
+			/>
+
+			{/* Gradient header */}
+			<div className={`relative h-[140px] bg-gradient-to-br ${pkg.gradient}`}>
+				<div
+					className="absolute inset-0 opacity-25"
+					style={{
+						backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+					}}
+				/>
+				{isAuto && (
+					<div className="absolute inset-0 flex items-center justify-center opacity-20">
+						<Zap className="w-16 h-16 text-white" />
+					</div>
+				)}
+				{pkg.badge && (
+					<div
+						className={`absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap ${isAuto ? "bg-gradient-to-r from-violet-600 to-purple-500" : "bg-gradient-to-r from-[#e8450a] to-[#f26522]"}`}
+					>
+						{pkg.badge}
+					</div>
+				)}
+				<div className="absolute bottom-0 left-0 px-4 py-3">
+					<p className="text-white/50 text-[10px] font-semibold tracking-[3px] uppercase">
+						{pkg.tagline}
+					</p>
+					<h3 className="font-display font-black text-white text-[20px] leading-tight">
+						{pkg.name}
+					</h3>
+				</div>
+				<div className="absolute bottom-0 right-0 bg-black/40 backdrop-blur-sm px-4 py-3">
+					{pkg.price ? (
+						<>
+							<div className="font-display font-black text-white leading-none text-[22px]">
+								€{pkg.price}
+							</div>
+							<div className="text-white/60 text-[11px] tracking-[1px]">/ месец</div>
+						</>
+					) : (
+						<div className="font-display font-bold text-white text-[8px] tracking-[1px]">
+							По запитване
+						</div>
+					)}
+				</div>
+			</div>
+
+			{/* Content */}
+			<div
+				className={`px-6 py-6 flex flex-col gap-5 ${isAuto ? "bg-[#0d0a1a]" : "bg-dark-charcoal"}`}
+			>
+				<p className="text-[13px] text-white/55 leading-relaxed">{pkg.description}</p>
+
+				<ul className="flex flex-col gap-2.5">
+					{pkg.features.map((f) => (
+						<li key={f} className="flex items-center gap-3 text-[13px] text-white/75">
+							<div
+								className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${isAuto ? "bg-violet-500/10 border border-violet-500/30" : "bg-[#f26522]/10 border border-[#f26522]/30"}`}
+							>
+								<Check
+									className={`w-2 h-2 ${isAuto ? "text-violet-400" : "text-[#f26522]"}`}
+								/>
+							</div>
+							{f}
+						</li>
+					))}
+				</ul>
+
+				<div className="pt-2 border-t border-white/[0.06]">
+					<a
+						href="#cta"
+						className={`w-full text-center flex items-center justify-center gap-2 py-[14px] px-6 font-display text-[11px] font-bold tracking-[2px] uppercase text-white rounded-[4px] transition-all duration-300 ${isAuto ? "bg-gradient-to-r from-violet-700 to-purple-600" : "bg-gradient-to-r from-[#e8450a] to-[#f26522]"}`}
+					>
+						{pkg.price ? "Избери пакета" : "Запитване"}
+						<ArrowRight className="w-4 h-4" />
+					</a>
+					<p className="text-[10px] text-white/25 text-center mt-3">
+						{pkg.price
+							? "Мин. 3 месеца · Без скрити такси"
+							: "Безплатна консултация · Без ангажимент"}
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
 
 function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	const [flipped, setFlipped] = useState(false);
@@ -195,7 +290,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 							)}
 						</ul>
 						<div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] text-white/25 tracking-[1px] text-center">
-							Задръж за повече информация
+							Виж повече →
 						</div>
 					</div>
 				</div>
@@ -229,11 +324,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 									className="flex items-center gap-3 text-[13px] text-white/75"
 								>
 									<div
-										className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-											isAuto
-												? "bg-violet-500/10 border border-violet-500/30"
-												: "bg-[#f26522]/10 border border-[#f26522]/30"
-										}`}
+										className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${isAuto ? "bg-violet-500/10 border border-violet-500/30" : "bg-[#f26522]/10 border border-[#f26522]/30"}`}
 									>
 										<Check
 											className={`w-2 h-2 ${isAuto ? "text-violet-400" : "text-[#f26522]"}`}
@@ -314,7 +405,7 @@ export default function Packages() {
 	);
 
 	return (
-		<section ref={container} id="packages" className="py-16 px-16 bg-dark-charcoal">
+		<section ref={container} id="packages" className="py-16 px-4 md:px-16 bg-dark-charcoal">
 			{/* HEADER */}
 			<div className="text-center mb-20">
 				<span className="section-label">Прозрачно ценообразуване</span>
@@ -329,8 +420,8 @@ export default function Packages() {
 				</p>
 			</div>
 
-			{/* 4 FLIP CARDS — 3 + 1 layout */}
-			<div className="pkg-grid max-w-7xl mx-auto">
+			{/* DESKTOP — 4 flip карти */}
+			<div className="pkg-grid max-w-7xl mx-auto hidden md:block">
 				<div className="grid grid-cols-4 gap-6 mb-6">
 					{PACKAGES.map((pkg) => (
 						<FlipCard key={pkg.name} pkg={pkg} />
@@ -338,10 +429,17 @@ export default function Packages() {
 				</div>
 			</div>
 
+			{/* MOBILE — статични карти */}
+			<div className="pkg-grid max-w-lg mx-auto flex flex-col gap-6 md:hidden">
+				{PACKAGES.map((pkg) => (
+					<MobileCard key={pkg.name} pkg={pkg} />
+				))}
+			</div>
+
 			{/* CUSTOM CTA BANNER */}
 			<div className="pkg-card max-w-7xl mx-auto mt-12 relative border border-white/[0.07] bg-dark-surface overflow-hidden">
 				<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522]" />
-				<div className="flex items-center justify-between px-12 py-9 gap-10">
+				<div className="flex flex-col md:flex-row items-start md:items-center justify-between px-8 md:px-12 py-9 gap-6">
 					<div>
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-1">
 							Нещо по-голямо?
