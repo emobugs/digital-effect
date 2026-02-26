@@ -475,7 +475,7 @@ export default function Packages() {
 			{/* CUSTOM CTA BANNER */}
 			<div className="max-w-7xl mx-auto mt-12 relative border border-white/[0.07] bg-dark-surface overflow-hidden text-center md:text-left">
 				<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522]" />
-				<div className="flex flex-col md:flex-row items-start md:items-center justify-between px-8 md:px-12 py-9 gap-6">
+				<div className="flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-12 py-9 gap-6">
 					<div>
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-1">
 							Нещо по-голямо?
