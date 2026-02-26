@@ -89,14 +89,50 @@ const PACKAGES = [
 
 function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	const isAuto = pkg.name === "Автоматизация";
+	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		gsap.fromTo(
+			el,
+			{ opacity: 0, y: 40 },
+			{
+				opacity: 1,
+				y: 0,
+				duration: 0.6,
+				ease: "power2.out",
+				scrollTrigger: {
+					trigger: el,
+					start: "top 75%",
+				},
+			},
+		);
+		gsap.fromTo(
+			el.querySelectorAll(".mob-feature"),
+			{ opacity: 0, x: -20 },
+			{
+				opacity: 1,
+				x: 0,
+				duration: 0.4,
+				stagger: 0.1,
+				ease: "power2.out",
+				scrollTrigger: {
+					trigger: el,
+					start: "top 60%",
+				},
+			},
+		);
+	}, []);
 
 	return (
 		<div
-			className={`pkg-card border overflow-hidden ${isAuto ? "border-violet-500/20" : "border-white/[0.08]"}`}
+			ref={ref}
+			className={`border overflow-hidden ${isAuto ? "border-violet-500/20" : "border-white/[0.08]"} rounded-[2px]`}
 		>
-			<div
-				className={`h-[3px] bg-gradient-to-r ${isAuto ? "from-violet-700 via-purple-500 to-violet-400" : pkg.gradient}`}
-			/>
+			{/* <div
+				className={`h-[0px] bg-gradient-to-r ${isAuto ? "from-violet-700 via-purple-500 to-violet-400" : pkg.gradient}`}
+			/> */}
 
 			{/* Gradient header */}
 			<div className={`relative h-[140px] bg-gradient-to-br ${pkg.gradient}`}>
@@ -135,7 +171,7 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 							<div className="text-white/60 text-[11px] tracking-[1px]">/ месец</div>
 						</>
 					) : (
-						<div className="font-display font-bold text-white text-[8px] tracking-[1px]">
+						<div className="font-display font-bold text-white text-[13px] tracking-[1px]">
 							По запитване
 						</div>
 					)}
@@ -150,7 +186,10 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 
 				<ul className="flex flex-col gap-2.5">
 					{pkg.features.map((f) => (
-						<li key={f} className="flex items-center gap-3 text-[13px] text-white/75">
+						<li
+							key={f}
+							className="mob-feature flex items-center gap-3 text-[13px] text-white/75"
+						>
 							<div
 								className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${isAuto ? "bg-violet-500/10 border border-violet-500/30" : "bg-[#f26522]/10 border border-[#f26522]/30"}`}
 							>
@@ -185,10 +224,32 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	const [flipped, setFlipped] = useState(false);
 	const isAuto = pkg.name === "Автоматизация";
+	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		gsap.fromTo(
+			el.querySelectorAll(".mob-feature"),
+			{ opacity: 0, y: 50 },
+			{
+				opacity: 1,
+				y: 0,
+				duration: 0.7,
+				stagger: 0.2,
+				ease: "power2.out",
+				scrollTrigger: {
+					trigger: el,
+					start: "top 60%",
+				},
+			},
+		);
+	}, []);
 
 	return (
 		<div
-			className="pkg-card relative h-[560px] cursor-pointer"
+			ref={ref}
+			className="relative h-[560px] cursor-pointer card"
 			style={{ perspective: "1200px" }}
 			onMouseEnter={() => setFlipped(true)}
 			onMouseLeave={() => setFlipped(false)}
@@ -218,7 +279,6 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 						</div>
 					)}
 
-					{/* Gradient image area */}
 					<div
 						className={`relative h-[200px] bg-gradient-to-br ${pkg.gradient} flex-shrink-0`}
 					>
@@ -228,15 +288,11 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 								backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
 							}}
 						/>
-
-						{/* Automation icon */}
 						{isAuto && (
 							<div className="absolute inset-0 flex items-center justify-center opacity-20">
 								<Zap className="w-24 h-24 text-white" />
 							</div>
 						)}
-
-						{/* Price */}
 						<div className="absolute bottom-0 right-0 bg-black/40 backdrop-blur-sm px-3 py-2">
 							{pkg.price ? (
 								<>
@@ -253,8 +309,6 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 								</div>
 							)}
 						</div>
-
-						{/* Name */}
 						<div className="absolute bottom-0 left-0 px-4 py-4">
 							<p className="text-white/50 text-[10px] font-semibold tracking-[3px] uppercase">
 								{pkg.tagline}
@@ -265,7 +319,6 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 						</div>
 					</div>
 
-					{/* Features */}
 					<div
 						className={`flex-1 px-7 py-6 flex flex-col justify-between ${isAuto ? "bg-[#0d0a1a]" : "bg-dark-charcoal"}`}
 					>
@@ -273,7 +326,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 							{pkg.features.map((f) => (
 								<li
 									key={f}
-									className="flex items-center gap-3 text-[13px] text-white/65"
+									className="flip-feature flex items-center gap-3 text-[13px] text-white/65"
 								>
 									<Check
 										className={`w-3.5 h-3.5 flex-shrink-0 ${isAuto ? "text-violet-400" : "text-[#f26522]"}`}
@@ -387,25 +440,44 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 export default function Packages() {
 	const container = useRef<HTMLElement>(null);
 
-	useGSAP(
-		() => {
-			gsap.from(".pkg-card", {
-				opacity: 0,
-				y: 50,
-				duration: 0.7,
-				stagger: 0.2,
+	useEffect(() => {
+		const el = container.current;
+		if (!el) return;
+		gsap.fromTo(
+			el.querySelectorAll(".card"),
+			{ opacity: 0, y: 50 },
+			{
+				opacity: 1,
+				y: 0,
+				duration: 0.9,
+				stagger: 0.4,
 				ease: "power2.out",
 				scrollTrigger: {
-					trigger: ".pkg-grid",
+					trigger: el,
 					start: "top 60%",
 				},
-			});
-		},
-		{ scope: container },
-	);
+			},
+		);
+		gsap.fromTo(
+			".flip-feature",
+			{ opacity: 0, x: -20 },
+			{
+				opacity: 1,
+				x: 0,
+				duration: 0.4,
+				stagger: 0.08,
+				ease: "power2.out",
+				delay: 0.5, // изчакай картите да влязат
+				scrollTrigger: {
+					trigger: ".pkg-grid", // същия trigger като картите
+					start: "top 60%",
+				},
+			},
+		);
+	}, []);
 
 	return (
-		<section ref={container} id="packages" className="py-16 px-4 md:px-16 bg-dark-charcoal">
+		<section ref={container} id="packages" className="py-16 px-8 md:px-16 bg-dark-charcoal">
 			{/* HEADER */}
 			<div className="text-center mb-20">
 				<span className="section-label">Прозрачно ценообразуване</span>
@@ -421,7 +493,7 @@ export default function Packages() {
 			</div>
 
 			{/* DESKTOP — 4 flip карти */}
-			<div className="pkg-grid max-w-7xl mx-auto hidden md:block">
+			<div className="max-w-7xl mx-auto hidden md:block">
 				<div className="grid grid-cols-4 gap-6 mb-6">
 					{PACKAGES.map((pkg) => (
 						<FlipCard key={pkg.name} pkg={pkg} />
@@ -430,14 +502,14 @@ export default function Packages() {
 			</div>
 
 			{/* MOBILE — статични карти */}
-			<div className="pkg-grid max-w-lg mx-auto flex flex-col gap-6 md:hidden">
+			<div className="max-w-lg mx-auto flex flex-col gap-6 md:hidden">
 				{PACKAGES.map((pkg) => (
 					<MobileCard key={pkg.name} pkg={pkg} />
 				))}
 			</div>
 
 			{/* CUSTOM CTA BANNER */}
-			<div className="pkg-card max-w-7xl mx-auto mt-12 relative border border-white/[0.07] bg-dark-surface overflow-hidden">
+			<div className="max-w-7xl mx-auto mt-12 relative border border-white/[0.07] bg-dark-surface overflow-hidden text-center md:text-left">
 				<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522]" />
 				<div className="flex flex-col md:flex-row items-start md:items-center justify-between px-8 md:px-12 py-9 gap-6">
 					<div>
@@ -452,7 +524,7 @@ export default function Packages() {
 					</div>
 					<a
 						href="#cta"
-						className="btn-primary whitespace-nowrap flex items-center gap-2"
+						className="btn-primary whitespace-nowrap flex items-center md:w-auto w-full gap-2"
 					>
 						Безплатна консултация
 						<ArrowRight className="w-4 h-4" />
