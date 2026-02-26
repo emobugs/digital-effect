@@ -30,7 +30,7 @@ const PACKAGES = [
 	{
 		name: "Реклама",
 		tagline: "Meta Ads / Google Ads",
-		price: "60",
+		price: "80",
 		priceLabel: "/ месец + % от бюджет",
 		badge: null,
 		gradient: "from-[#e8450a] via-[#f26522] to-[#f59c1a]",

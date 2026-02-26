@@ -29,7 +29,7 @@ export const PILLARS = [
 export const STATS = [
 	{ target: 3, suffix: "", label: "Платформи", sub: "Facebook, Instagram, TikTok" },
 	{ target: 5, suffix: "×", label: "Повече обхват", sub: "със стратегическо съдържание" },
-	{ target: 200, suffix: "€", label: "Старт цена/месец", sub: "без скрити такси" },
+	{ target: 80, suffix: "€", label: "Старт цена/месец", sub: "без скрити такси" },
 	{ target: 100, suffix: "%", label: "Фокус върху резултат", sub: "не брой публикации" },
 ];
 

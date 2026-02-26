@@ -51,30 +51,18 @@ export default function Problem() {
 				},
 			});
 
-			// gsap.from(".sol-item", {
-			// 	opacity: 0,
-			// 	x: 20,
-			// 	duration: 0.8,
-			// 	stagger: 0.25,
-			// 	ease: "power2.out",
-			// 	delay: 1.5,
-			// 	scrollTrigger: {
-			// 		trigger: ".sol-items",
-			// 		start: "top 75%",
-			// 	},
-			// });
 			mm.add("(max-width: 767px)", () => {
 				// Мобилен — всяка карта индивидуално
 				gsap.from(".sol-item", {
 					opacity: 0,
 					x: 20,
 					duration: 0.8,
-					stagger: 0.25,
+					stagger: 0.3,
 					ease: "power2.out",
 					delay: 0.5,
 					scrollTrigger: {
 						trigger: ".sol-items",
-						start: "top 75%",
+						start: "top 80%",
 					},
 				});
 			});
@@ -84,9 +72,9 @@ export default function Problem() {
 					opacity: 0,
 					x: 20,
 					duration: 0.8,
-					stagger: 0.25,
+					stagger: 0.3,
 					ease: "power2.out",
-					delay: 1.5,
+					delay: 0.7,
 					scrollTrigger: {
 						trigger: ".sol-items",
 						start: "top 75%",
