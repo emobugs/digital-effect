@@ -87,7 +87,7 @@ export default function Hero() {
 
 			{/* SCROLL INDICATOR */}
 			<div
-				className="hidden absolute bottom-10 left-2/3 -translate-x-1/2 md:flex flex-col items-center gap-2 text-white/25 text-[10px] tracking-[3px] uppercase"
+				className="hidden absolute bottom-10 left-1/2 -translate-x-1/2 md:flex flex-col items-center gap-2 text-white/25 text-[10px] tracking-[3px] uppercase"
 				style={{ animationDelay: "500ms" }}
 			>
 				<motion.div
@@ -95,7 +95,7 @@ export default function Hero() {
 					transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
 					className="w-px h-12 bg-gradient-to-b from-[#f26522] to-transparent origin-top"
 				/>
-				Разгледай
+				<p className="">Разгледай</p>
 			</div>
 		</section>
 	);
