@@ -153,7 +153,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 									</div>
 								</>
 							) : (
-								<div className="font-display font-bold text-white text-[10px] tracking-[1px]">
+								<div className="font-display font-bold text-white text-[8px] tracking-[1px]">
 									По запитване
 								</div>
 							)}
