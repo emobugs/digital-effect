@@ -26,15 +26,13 @@ export default function Services() {
 
 		const mm = gsap.matchMedia();
 
-		const cards = el.querySelectorAll(".card-feature");
-
 		mm.add("(max-width: 767px)", () => {
 			// Мобилен — всяка карта индивидуално
 			el.querySelectorAll(".card-feature").forEach((card) => {
 				gsap.set(card, { opacity: 0, y: 50 });
 				ScrollTrigger.create({
 					trigger: card,
-					start: "top 85%",
+					start: "top 90%",
 					onEnter: () => {
 						gsap.to(card, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
 					},
@@ -88,7 +86,7 @@ export default function Services() {
 					return (
 						<div
 							key={svc.num}
-							className="svc-card card-feature relative p-10 border border-white/[0.07] group overflow-hidden cursor-default"
+							className="card-feature relative p-10 border border-white/[0.07] group overflow-hidden cursor-default"
 						>
 							{/* Bottom gradient line on hover */}
 							{/* <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" /> */}
