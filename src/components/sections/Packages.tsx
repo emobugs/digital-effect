@@ -421,12 +421,12 @@ export default function Packages() {
 			{
 				opacity: 1,
 				y: 0,
-				duration: 0.9,
-				stagger: 0.4,
+				duration: 1.7,
+				stagger: 0.6,
 				ease: "power2.out",
 				scrollTrigger: {
 					trigger: el,
-					start: "top 60%",
+					start: "top 50%",
 				},
 			},
 		);
@@ -437,12 +437,12 @@ export default function Packages() {
 				opacity: 1,
 				x: 0,
 				duration: 0.4,
-				stagger: 0.08,
+				stagger: 0.15,
 				ease: "power2.out",
 				delay: 0.5, // изчакай картите да влязат
 				scrollTrigger: {
 					trigger: el, // същия trigger като картите
-					start: "top 60%",
+					start: "top 50%",
 				},
 			},
 		);
