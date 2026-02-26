@@ -10,60 +10,57 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const PACKAGES = [
 	{
-		name: "Старт",
-		tagline: "За малки бизнеси",
-		price: "200",
-		priceLabel: "€ / месец",
+		name: "Социални Мрежи",
+		tagline: "Управление на профили",
+		price: "180",
+		priceLabel: "/ месец",
 		badge: null,
 		gradient: "from-[#c0300a] via-[#e8450a] to-[#f59c1a]",
 		description:
-			"Идеален за местни магазини и стартиращи бизнеси, които искат последователно онлайн присъствие без голям бюджет.",
+			"Стратегическо управление на Facebook, Instagram и TikTok. Съдържание, копирайтинг, дизайн и community management — ти се фокусираш върху бизнеса.",
 		features: [
-			"2 платформи (FB + IG)",
-			"12 публикации / месец",
-			"Копирайтинг + дизайн",
-			"1 Reels видео / месец",
-			"Месечен отчет",
-			"Базова стратегия",
+			"Facebook + Instagram (или TikTok)",
+			"12–16 публикации / месец",
+			"Копирайтинг + графичен дизайн",
+			"Community management",
+			"Месечна стратегия и отчет",
+			"Reels / кратки видеа",
 		],
 	},
 	{
-		name: "Растеж",
-		tagline: "За активни бизнеси",
-		price: "420",
-		priceLabel: "€ / месец",
-		badge: "Най-популярен",
+		name: "Реклама",
+		tagline: "Meta Ads / Google Ads",
+		price: "60",
+		priceLabel: "/ месец + % от бюджет",
+		badge: null,
 		gradient: "from-[#e8450a] via-[#f26522] to-[#f59c1a]",
 		description:
-			"Пълен пакет с реклама И базова автоматизация. Конкурентите таксуват тези услуги поотделно за ~600–700 €.",
+			"Платени кампании, които носят реални резултати. Таргетиране, A/B тестове, ремаркетинг и оптимизация за максимална възвращаемост.",
 		features: [
-			"3 платформи (FB + IG + TikTok)",
-			"20 публикации / месец",
-			"2 Reels видеа / месец",
-			"Community management",
-			"Meta Ads управление",
-			"Базова автоматизация",
-			"Двуседмичен отчет",
+			"Meta Ads или Google Ads",
+			"Setup и структура на кампании",
+			"Таргетиране и аудитории",
+			"A/B тестване на реклами",
+			"Ремаркетинг системи",
+			"Двуседмичен отчет с KPI",
 		],
 	},
 	{
-		name: "Система",
-		tagline: "За амбициозен растеж",
-		price: "715",
-		priceLabel: "€ / месец",
+		name: "Уеб",
+		tagline: "Дизайн & Разработка",
+		price: "400",
+		priceLabel: " / поддръжка от €80",
 		badge: null,
 		gradient: "from-[#c0300a] via-[#e8450a] to-[#f26522]",
 		description:
-			"За бизнеси, които искат система — не просто публикации. Автоматизирани процеси, които работят докато ти спиш.",
+			"Модерни уебсайтове и landing pages, оптимизирани за конверсия. От дизайн до деплой — и поддръжка след това ако е нужна.",
 		features: [
-			"Всичко от Растеж +",
-			"Пълна автоматизация + чатбот",
-			"CRM интеграция",
-			"4 видеа / месец",
-			"Meta Ads + Google Ads",
-			"A/B тестове на реклами",
-			"Седмичен отчет",
-			"Приоритетна поддръжка (до 4ч.)",
+			"Custom дизайн и разработка",
+			"Landing page или multi-page сайт",
+			"Мобилна оптимизация",
+			"SEO основи",
+			"Интеграция с форми и инструменти",
+			"Поддръжка от €80 / месец",
 		],
 	},
 	{
@@ -82,7 +79,6 @@ const PACKAGES = [
 			"Lead capture автоматизация",
 			"Workflow автоматизация (n8n / Make)",
 			"Месечна поддръжка и оптимизация",
-			"Onboarding и обучение",
 		],
 	},
 ];
@@ -149,12 +145,12 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 				)}
 				{pkg.badge && (
 					<div
-						className={`absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap ${isAuto ? "bg-gradient-to-r from-violet-600 to-purple-500" : "bg-gradient-to-r from-[#e8450a] to-[#f26522]"}`}
+						className={`absolute top-3 left-[90%] -translate-x-[90%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap ${isAuto ? "bg-gradient-to-r from-violet-600 to-purple-500" : "bg-gradient-to-r from-[#e8450a] to-[#f26522]"}`}
 					>
 						{pkg.badge}
 					</div>
 				)}
-				<div className="absolute bottom-0 left-0 px-4 py-3">
+				<div className="absolute bottom-60% left-0 px-4 py-3">
 					<p className="text-white/50 text-[10px] font-semibold tracking-[3px] uppercase">
 						{pkg.tagline}
 					</p>
@@ -165,10 +161,9 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 				<div className="absolute bottom-0 right-0 bg-black/40 backdrop-blur-sm px-4 py-3">
 					{pkg.price ? (
 						<>
-							<div className="font-display font-black text-white leading-none text-[22px]">
-								€{pkg.price}
+							<div className="font-display font-black text-white leading-none text-[12px] w-full">
+								€{pkg.price} {pkg.priceLabel}
 							</div>
-							<div className="text-white/60 text-[11px] tracking-[1px]">/ месец</div>
 						</>
 					) : (
 						<div className="font-display font-bold text-white text-[13px] tracking-[1px]">
@@ -272,23 +267,20 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 								<Zap className="w-24 h-24 text-white" />
 							</div>
 						)}
-						<div className="absolute bottom-0 right-0 bg-black/40 backdrop-blur-sm px-3 py-2">
+						<div className="absolute bottom-0 right-0 bg-black/40 backdrop-blur-sm px-3 py-2 w-full">
 							{pkg.price ? (
 								<>
-									<div className="font-display font-black text-white leading-none text-[16px]">
-										€{pkg.price}
-									</div>
-									<div className="text-white/60 text-[11px] tracking-[1px]">
-										/ месец
+									<div className="font-display font-bold text-white leading-none text-[12px]">
+										€{pkg.price} {pkg.priceLabel}
 									</div>
 								</>
 							) : (
-								<div className="font-display font-bold text-white text-[8px] tracking-[1px]">
+								<div className="font-display font-bold text-white text-[12px] tracking-[1px]">
 									По запитване
 								</div>
 							)}
 						</div>
-						<div className="absolute bottom-0 left-0 px-4 py-4">
+						<div className="absolute bottom-0 left-0 px-4 py-4 mb-5">
 							<p className="text-white/50 text-[10px] font-semibold tracking-[3px] uppercase">
 								{pkg.tagline}
 							</p>
@@ -343,7 +335,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 						<div className="h-px bg-white/[0.06] mb-5" />
 
 						<ul className="flex flex-col gap-2.5 flex-1">
-							{pkg.features.slice(0, 5).map((f) => (
+							{pkg.features.slice(0, 4).map((f) => (
 								<li
 									key={f}
 									className="flex items-center gap-3 text-[13px] text-white/75"
@@ -358,11 +350,11 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 									{f}
 								</li>
 							))}
-							{pkg.features.length > 5 && (
+							{pkg.features.length > 4 && (
 								<li
 									className={`text-[12px] font-medium mt-1 ${isAuto ? "text-violet-400" : "text-[#f26522]"}`}
 								>
-									+ още {pkg.features.length - 5} →
+									+ още {pkg.features.length - 4} →
 								</li>
 							)}
 						</ul>
@@ -371,7 +363,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 							<div className="flex items-baseline gap-1 mb-4">
 								{pkg.price ? (
 									<>
-										<span className="font-display font-black text-gradient text-[34px] leading-none">
+										<span className="font-display font-black text-gradient text-[20px] leading-none">
 											€{pkg.price}
 										</span>
 										<span className="text-white/40 text-[12px]">/ месец</span>
@@ -490,7 +482,7 @@ export default function Packages() {
 						</p>
 						<h3 className="font-display font-black text-[20px] mb-1">Custom Проект</h3>
 						<p className="text-[14px] text-white/45 leading-relaxed">
-							Уебсайт, пълен rebrand, enterprise ретейнер или комбинация от услуги —
+							Брандинг, E-commerce, Мобилно приложение или друга определена услуга -
 							обсъждаме конкретните ти нужди.
 						</p>
 					</div>
