@@ -224,31 +224,10 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	const [flipped, setFlipped] = useState(false);
 	const isAuto = pkg.name === "Автоматизация";
-	const ref = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		const el = ref.current;
-		if (!el) return;
-		gsap.fromTo(
-			el.querySelectorAll(".mob-feature"),
-			{ opacity: 0, y: 50 },
-			{
-				opacity: 1,
-				y: 0,
-				duration: 0.7,
-				stagger: 0.2,
-				ease: "power2.out",
-				scrollTrigger: {
-					trigger: el,
-					start: "top 60%",
-				},
-			},
-		);
-	}, []);
 
 	return (
 		<div
-			ref={ref}
+			// ref={ref}
 			className="relative h-[560px] cursor-pointer card"
 			style={{ perspective: "1200px" }}
 			onMouseEnter={() => setFlipped(true)}
@@ -334,13 +313,6 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 									{f}
 								</li>
 							))}
-							{pkg.features.length > 6 && (
-								<li
-									className={`text-[12px] font-medium mt-1 ${isAuto ? "text-violet-400" : "text-[#f26522]"}`}
-								>
-									{/* +{pkg.features.length - 7} още → */}
-								</li>
-							)}
 						</ul>
 						<div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] text-white/25 tracking-[1px] text-center">
 							Виж повече →
@@ -390,7 +362,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 								<li
 									className={`text-[12px] font-medium mt-1 ${isAuto ? "text-violet-400" : "text-[#f26522]"}`}
 								>
-									+{pkg.features.length - 5} още →
+									+ още {pkg.features.length - 5} →
 								</li>
 							)}
 						</ul>
@@ -459,7 +431,7 @@ export default function Packages() {
 			},
 		);
 		gsap.fromTo(
-			".flip-feature",
+			el.querySelectorAll(".flip-feature"),
 			{ opacity: 0, x: -20 },
 			{
 				opacity: 1,
@@ -469,7 +441,7 @@ export default function Packages() {
 				ease: "power2.out",
 				delay: 0.5, // изчакай картите да влязат
 				scrollTrigger: {
-					trigger: ".pkg-grid", // същия trigger като картите
+					trigger: el, // същия trigger като картите
 					start: "top 60%",
 				},
 			},
