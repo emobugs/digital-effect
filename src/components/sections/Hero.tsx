@@ -42,7 +42,7 @@ export default function Hero() {
 			{/* HEADLINE */}
 			<h1
 				className="hero-item text-center font-display font-black uppercase leading-[0.93] tracking-[-3px]"
-				style={{ fontSize: "clamp(48px, 8.5vw, 118px)" }}
+				style={{ fontSize: "clamp(44px, 8.5vw, 118px)" }}
 			>
 				Изграждаме
 				<br />
