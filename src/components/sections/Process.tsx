@@ -106,10 +106,10 @@ export default function Process() {
 				});
 
 				// Линията и стъпките вървят заедно
-				tl.to(".connector-line", { scaleX: 1, duration: 1.8, ease: "power1.inOut" })
+				tl.to(".connector-line", { scaleX: 1, duration: 2.2, ease: "power1.inOut" })
 					.to(
 						steps,
-						{ opacity: 1, y: 0, duration: 0.5, stagger: 0.35, ease: "power2.out" },
+						{ opacity: 1, y: 0, duration: 0.6, stagger: 0.6, ease: "power2.out" },
 						0,
 					)
 					.fromTo(
@@ -139,9 +139,9 @@ export default function Process() {
 			<div className="steps-grid max-w-7xl mx-auto grid md:grid-cols-4 gap-0 relative">
 				{/* Connecting line — desktop only */}
 				{/* Track */}
-				<div className="hidden md:block absolute top-[28px] left-[12.5%] right-[12.5%] h-[2px] bg-white/[0.05]" />
+				<div className="hidden md:block absolute top-[28px] left-[5.5%] right-[20%] h-[2px] bg-white/[0.05]" />
 				{/* Animated fill */}
-				<div className="connector-line hidden md:block absolute top-[28px] left-[12.5%] right-[12.5%] h-[2px] bg-gradient-to-r from-[#c0300a] via-[#f26522] to-[#f59c1a] scale-x-0" />
+				<div className="connector-line hidden md:block absolute top-[28px] left-[5.5%] right-[20%] h-[2px] bg-gradient-to-r from-[#c0300a] via-[#f26522] to-[#f59c1a] scale-x-0" />
 
 				{STEPS.map((step, i) => {
 					const { Icon } = step;
