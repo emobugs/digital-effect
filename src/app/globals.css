@@ -91,6 +91,10 @@
 	.card-dark {
 		@apply bg-dark-charcoal border border-white/[0.07] relative overflow-hidden;
 	}
+
+	.bubbles:hover {
+		@apply border-[#f26522] text-[#f26522] bg-[#f26522]/[0.07] transition-colors duration-500;
+	}
 }
 
 @layer utilities {
