@@ -32,9 +32,9 @@ export default function Hero() {
 		>
 			<div className="pt-[76px]"></div>
 			{/* Badge */}
-			<div className="hero-item inline-flex items-center gap-2 px-5 py-2 mb-12 rounded-full border border-[#f26522]/35 bg-[#f26522]/07 animate-pulse md:animate-none">
+			<div className="hero-item inline-flex items-center max-sm:w-[80%]  gap-2 px-5 py-2 mb-12 mt-2 rounded-full border border-[#f26522]/35 bg-[#f26522]/07">
 				<span className="hidden md:block w-[7px] h-[7px] rounded-full bg-[#f26522] animate-pulse" />
-				<span className="text-[11px] font-medium tracking-[2px] uppercase text-[#f26522]">
+				<span className="text-[11px] md:text-[14px]  font-medium tracking-[2px] uppercase text-[#f26522] animate-pulse md:animate-none">
 					Дигитален Маркетинг за Реален Растеж
 				</span>
 			</div>
