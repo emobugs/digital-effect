@@ -94,7 +94,7 @@ export default function Projects() {
 	return (
 		<section ref={container} id="projects" className="py-24 px-4 md:px-16 bg-dark-charcoal">
 			{/* HEADER */}
-			<div className="projects-head mb-16">
+			<div className="projects-head mb-6 md:mb-12 max-sm:text-center">
 				<span className="section-label">Нашата работа</span>
 				<h2 className="section-title">
 					Избрани
@@ -123,14 +123,14 @@ export default function Projects() {
 					</div>
 
 					{/* Project info */}
-					<div className="flex flex-col justify-between min-h-[320px]">
+					<div className="flex flex-col items-center md:items-start justify-between min-h-[320px]">
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-1">
 							{project.category} · {project.year}
 						</p>
 						<h3 className="font-display font-black text-[32px] md:text-[40px] leading-tight mb-4">
 							{project.name}
 						</h3>
-						<p className="text-[14px] text-white/50 leading-relaxed mb-6">
+						<p className="text-[14px] text-white/50 leading-relaxed mb-6 text-center md:text-left">
 							{project.description}
 						</p>
 
