@@ -13,6 +13,8 @@ import Cta from "@/components/sections/Cta";
 import { ReactLenis, LenisRef } from "lenis/react";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
+import Projects from "@/components/sections/Projects";
+import Footer from "@/components/sections/Footer";
 
 export default function Home() {
 	// const lenis = useLenis((lenis) => {
@@ -53,7 +55,9 @@ export default function Home() {
 					<Packages />
 					<Extras />
 					<Process />
+					<Projects />
 					<Cta />
+					<Footer />
 				</main>
 			</ReactLenis>
 			{/* <Footer /> */}
