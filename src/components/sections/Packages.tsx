@@ -429,9 +429,9 @@ export default function Packages() {
 				opacity: 1,
 				x: 0,
 				duration: 0.4,
-				stagger: 0.15,
+				stagger: 0.1,
 				ease: "power2.out",
-				delay: 0.5, // изчаква картите да влязат
+				delay: 0.4, // изчаква картите да влязат
 				scrollTrigger: {
 					trigger: el, // същия trigger като картите
 					start: "top 50%",
