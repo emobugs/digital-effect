@@ -91,7 +91,7 @@ export default function Problem() {
 			id="problem"
 			className="py-8 md:py-36 px-8 md:px-16 bg-dark-surface"
 		>
-			<div className="grid lg:grid-cols-2 gap-24 items-center">
+			<div className="grid lg:grid-cols-2 gap-8 md:gap-24 items-center">
 				{/* LEFT — Проблеми */}
 				<div className="prob-left">
 					<span className="section-label md:text-left text-center">Познаваш ли ги?</span>
