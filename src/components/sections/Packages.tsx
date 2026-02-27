@@ -413,8 +413,8 @@ export default function Packages() {
 			{
 				opacity: 1,
 				y: 0,
-				duration: 1.7,
-				stagger: 0.6,
+				duration: 1.3,
+				stagger: 0.55,
 				ease: "power2.out",
 				scrollTrigger: {
 					trigger: el,
@@ -431,7 +431,7 @@ export default function Packages() {
 				duration: 0.4,
 				stagger: 0.15,
 				ease: "power2.out",
-				delay: 0.5, // изчакай картите да влязат
+				delay: 0.5, // изчаква картите да влязат
 				scrollTrigger: {
 					trigger: el, // същия trigger като картите
 					start: "top 50%",
@@ -473,22 +473,40 @@ export default function Packages() {
 			</div>
 
 			{/* CUSTOM CTA BANNER */}
-			<div className="max-w-7xl mx-auto mt-12 relative border border-white/[0.07] bg-dark-surface overflow-hidden text-center md:text-left">
+			<div className="card max-w-7xl mx-auto mt-12 relative border border-white/[0.07] bg-dark-surface overflow-hidden text-center md:text-left">
 				<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522]" />
-				<div className="flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-12 py-9 gap-6">
-					<div>
+				<div className="flex flex-col md:flex-row items-center md:items-center justify-between px-4 md:px-12 py-9 gap-6">
+					<div className="">
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-1">
 							Нещо по-голямо?
 						</p>
-						<h3 className="font-display font-black text-[20px] mb-1">Custom Проект</h3>
-						<p className="text-[14px] text-white/45 leading-relaxed">
-							Брандинг, E-commerce, Мобилно приложение или друга определена услуга -
-							обсъждаме конкретните ти нужди.
-						</p>
+						<h3 className="font-display font-black text-[22px] mb-4 md:mb-1">
+							Custom Проект
+						</h3>
+					</div>
+					<div className="flex-1">
+						{/* Pills */}
+						<div className="flex flex-wrap gap-2 justify-center md:justify-center">
+							{[
+								"Брандинг & Лого",
+								"E-commerce",
+								"Мобилно Приложение",
+								"Консултация",
+								"Анализ на Конкуренция",
+								"Стратегия от Нулата",
+							].map((pill) => (
+								<span
+									key={pill}
+									className="flip-feature bubbles px-4 py-1.5 rounded-full border border-white/[0.1] text-[12px] text-white/50 tracking-[0.5px]"
+								>
+									{pill}
+								</span>
+							))}
+						</div>
 					</div>
 					<a
 						href="#cta"
-						className="btn-primary whitespace-nowrap flex items-center md:w-auto w-full gap-2"
+						className="btn-primary whitespace-nowrap flex items-center md:w-auto w-full justify-center gap-2 flex-shrink-0"
 					>
 						Безплатна консултация
 						<ArrowRight className="w-4 h-4" />
