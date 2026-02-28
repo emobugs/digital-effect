@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 	openGraph: {
 		title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
 		description: "Изграждаме система, не просто публикации.",
-		url: "https://digitaleffect.bg",
+		url: "https://digital-effect.vercel.app/",
 		siteName: "Digital Effect",
 		locale: "bg_BG",
 		type: "website",
