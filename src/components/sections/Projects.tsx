@@ -24,12 +24,28 @@ const PROJECTS = [
 		num: "02",
 		name: "Robert Key",
 		category: "Уеб дизайн & Разработка",
-		tags: ["Next.js", "SEO", "Local Business", "Leads"],
+		tags: ["React", "SEO", "Local Business", "Leads"],
 		description:
 			"Landing page за авариен ключар в Силистра. Фокус върху бърза конверсия — телефонен номер на видно място, SEO оптимизация за локално търсене.",
 		url: "https://robertkey.vercel.app",
 		image: "/projects/robertkey.png",
 		year: "2025",
+	},
+	{
+		num: "03",
+		name: "AromaSecret",
+		category: "Meta Ads & Социални Мрежи",
+		tags: ["Meta Ads", "Reach", "Engagement"],
+		description:
+			"Рекламни кампании за магазин за парфюми. $1.07K инвестиция, 303K reach и 1.68M impressions с CPM от само $0.64.",
+		url: null,
+		image: null,
+		year: "2025",
+		stats: [
+			{ label: "Reach", value: "303K" },
+			{ label: "Impressions", value: "1.68M" },
+			{ label: "CPM", value: "$0.64" },
+		],
 	},
 ];
 
@@ -133,6 +149,20 @@ export default function Projects() {
 						<p className="text-[14px] text-white/50 leading-relaxed mb-6 text-center md:text-left">
 							{project.description}
 						</p>
+						{project.stats && (
+							<div className="grid grid-cols-3 gap-4 py-4 border-y border-white/[0.06]">
+								{project.stats.map((s) => (
+									<div key={s.label}>
+										<div className="font-display font-black text-[22px] text-gradient leading-none mb-1">
+											{s.value}
+										</div>
+										<div className="text-[10px] text-white/35 tracking-[1.5px] uppercase">
+											{s.label}
+										</div>
+									</div>
+								))}
+							</div>
+						)}
 
 						{/* Tags */}
 						<div className="flex flex-wrap gap-2 mb-8">
