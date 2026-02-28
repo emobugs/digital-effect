@@ -4,23 +4,23 @@ import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ArrowRight, Mail, Phone } from "lucide-react";
+import { ArrowRight, Mail, Phone, Copy, Check as CheckIcon } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
-interface ContactFormData {
-	user_name: string;
-	user_email: string;
-	subject: string;
-	message: string;
-	// Добави тук други полета, ако имаш (напр. phone)
-}
 
 export default function CTA() {
 	const container = useRef<HTMLElement>(null);
 	const [form, setForm] = useState({ name: "", email: "", message: "" });
 	const [sent, setSent] = useState(false);
+	const [copied, setCopied] = useState<"email" | "phone" | null>(null);
 	const formRef = useRef<HTMLFormElement>(null);
+
+	const copyTo = (text: string, type: "email" | "phone") => {
+		navigator.clipboard.writeText(text);
+		setCopied(type);
+		setTimeout(() => setCopied(null), 2000);
+	};
 
 	useGSAP(
 		() => {
@@ -53,9 +53,7 @@ export default function CTA() {
 
 	const sendEmail = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
 		if (!formRef.current) return;
-
 		try {
 			const result = await emailjs.sendForm(
 				"digital_effect",
@@ -63,10 +61,9 @@ export default function CTA() {
 				formRef.current,
 				"kdG_3cmBdAuzpN3ke",
 			);
-
 			console.log("Success:", result.text);
-			alert("Съобщението е изпратено успешно!");
-			formRef.current.reset(); // Изчистване на формата
+			setSent(true);
+			formRef.current.reset();
 		} catch (error) {
 			const err = error as { text: string };
 			console.error("Error:", err.text);
@@ -80,9 +77,9 @@ export default function CTA() {
 			<div className="cta-head text-center mb-16">
 				<span className="section-label">Свържи се с нас</span>
 				<h2 className="section-title">
-					Готов за
+					Готов да
 					<br />
-					<span className="text-gradient">Следващата Стъпка?</span>
+					<span className="text-gradient uppercase">Изградиш ефекта?</span>
 				</h2>
 				<p className="text-[15px] text-white/50 max-w-md mx-auto mt-5 leading-relaxed">
 					Безплатна консултация. Без ангажимент. Само разговор за това как можем да
@@ -98,24 +95,69 @@ export default function CTA() {
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-4">
 							Директен контакт
 						</p>
-						<a
-							href="mailto:hello@digitaleffect.bg"
-							className="flex items-center gap-3 text-[14px] text-white/60 hover:text-white transition-colors duration-300 mb-4 group"
-						>
-							<div className="w-9 h-9 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300">
+
+						{/* Email */}
+						<div className="flex items-center gap-3 mb-4 group">
+							{/* Иконка — на мобилен е линк, на десктоп е декорация */}
+							<a
+								href="mailto:digitaleffect@gmail.com"
+								className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300 flex-shrink-0"
+							>
 								<Mail className="w-4 h-4 text-[#f26522]" />
-							</div>
-							hello@digitaleffect.bg
-						</a>
-						<a
-							href="tel:+359 89 588 3713"
-							className="flex items-center gap-3 text-[14px] text-white/60 hover:text-white transition-colors duration-300 group"
-						>
-							<div className="w-9 h-9 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300">
+							</a>
+
+							{/* Десктоп — copy on click */}
+							<button
+								onClick={() => copyTo("digitaleffect@gmail.com", "email")}
+								className="hidden md:flex items-center gap-2 text-[13px] text-white/50 hover:text-white transition-colors duration-300"
+							>
+								thedigitaleffectagency@gmail.com
+								{copied === "email" ? (
+									<CheckIcon className="w-3 h-3 text-[#f26522] flex-shrink-0" />
+								) : (
+									<Copy className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors duration-300 flex-shrink-0" />
+								)}
+							</button>
+
+							{/* Мобилен — кликабелен текст */}
+							<a
+								href="mailto:thedigitaleffectagency@gmail.com"
+								className="md:hidden text-[13px] text-white/50"
+							>
+								thedigitaleffectagency@gmail.com
+							</a>
+						</div>
+
+						{/* Phone */}
+						<div className="flex items-center gap-3 group">
+							<a
+								href="tel:+359895883713"
+								className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300 flex-shrink-0"
+							>
 								<Phone className="w-4 h-4 text-[#f26522]" />
-							</div>
-							+359 89 588 3713
-						</a>
+							</a>
+
+							{/* Десктоп — copy on click */}
+							<button
+								onClick={() => copyTo("+359 89 588 3713", "phone")}
+								className="hidden md:flex items-center gap-2 text-[13px] text-white/50 hover:text-white transition-colors duration-300"
+							>
+								+359 89 588 3713
+								{copied === "phone" ? (
+									<CheckIcon className="w-3 h-3 text-[#f26522] flex-shrink-0" />
+								) : (
+									<Copy className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors duration-300 flex-shrink-0" />
+								)}
+							</button>
+
+							{/* Мобилен — кликабелен текст (набира директно) */}
+							<a
+								href="tel:+359895883713"
+								className="md:hidden text-[13px] text-white/50"
+							>
+								+359 89 588 3713
+							</a>
+						</div>
 					</div>
 
 					<div className="h-px bg-white/[0.06]" />
@@ -139,7 +181,7 @@ export default function CTA() {
 					{sent ? (
 						<div className="flex flex-col items-center justify-center h-full gap-4 py-12 text-center">
 							<div className="w-14 h-14 rounded-full bg-[#f26522]/10 border border-[#f26522]/30 flex items-center justify-center mb-2">
-								<ArrowRight className="w-5 h-5 text-[#f26522]" />
+								<CheckIcon className="w-5 h-5 text-[#f26522]" />
 							</div>
 							<h3 className="font-display font-black text-[22px]">
 								Получихме съобщението!
