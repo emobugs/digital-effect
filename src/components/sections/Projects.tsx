@@ -39,7 +39,7 @@ const PROJECTS = [
 		description:
 			"Рекламни кампании за магазин за парфюми. $1.07K инвестиция, 303K reach и 1.68M impressions с CPM от само $0.64.",
 		url: null,
-		image: null,
+		image: "/projects/aromasecret.png",
 		year: "2025",
 		stats: [
 			{ label: "Reach", value: "303K" },
