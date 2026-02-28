@@ -146,7 +146,7 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 				)}
 				{pkg.badge && (
 					<div
-						className={`absolute top-8 left-[90%] -translate-x-[90%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap 
+						className={`absolute top-2 left-[95%] -translate-x-[90%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap 
 							${
 								isAuto
 									? "bg-gradient-to-r from-violet-600 to-purple-500"
