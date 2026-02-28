@@ -17,11 +17,6 @@ import Projects from "@/components/sections/Projects";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
-	// const lenis = useLenis((lenis) => {
-	// 	// called every scroll
-	// 	console.log(lenis);
-	// });
-
 	const lenisRef = useRef<LenisRef>(null);
 
 	useEffect(() => {
@@ -60,7 +55,6 @@ export default function Home() {
 					<Footer />
 				</main>
 			</ReactLenis>
-			{/* <Footer /> */}
 		</>
 	);
 }
