@@ -139,7 +139,7 @@ export default function Projects() {
 					</div>
 
 					{/* Project info */}
-					<div className="flex flex-col items-center md:items-start justify-between min-h-[320px]">
+					<div className="flex flex-col items-center md:items-start justify-between min-h-[360px]">
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-1">
 							{project.category} · {project.year}
 						</p>
@@ -175,8 +175,24 @@ export default function Projects() {
 								</span>
 							))}
 						</div>
-
+					</div>
+					<div className="flex gap-8">
 						{/* CTA */}
+						<div className="flex gap-3 mt-2">
+							<button
+								onClick={prev}
+								className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center text-white/40 hover:border-[#f26522]/40 hover:text-[#f26522] transition-all duration-300"
+							>
+								<ChevronUp className="w-4 h-4" />
+							</button>
+							<button
+								onClick={next}
+								className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center text-white/40 hover:border-[#f26522]/40 hover:text-[#f26522] transition-all duration-300"
+							>
+								<ChevronDown className="w-4 h-4" />
+							</button>
+						</div>
+						{/* Arrow navigation */}
 						{project.url ? (
 							<a
 								href={project.url}
@@ -188,27 +204,14 @@ export default function Projects() {
 								<ArrowUpRight className="w-4 h-4" />
 							</a>
 						) : (
-							<a href="#cta" className="btn-ghost inline-flex items-center gap-2">
-								Стани следващ клиент
+							<a
+								href="#cta"
+								className="btn-ghost inline-flex items-center text-[10px] gap-2"
+							>
+								Бъди следващия
 								<ArrowRight className="w-4 h-4" />
 							</a>
 						)}
-					</div>
-
-					{/* Arrow navigation */}
-					<div className="flex gap-3 mt-2">
-						<button
-							onClick={prev}
-							className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center text-white/40 hover:border-[#f26522]/40 hover:text-[#f26522] transition-all duration-300"
-						>
-							<ChevronUp className="w-4 h-4" />
-						</button>
-						<button
-							onClick={next}
-							className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center text-white/40 hover:border-[#f26522]/40 hover:text-[#f26522] transition-all duration-300"
-						>
-							<ChevronDown className="w-4 h-4" />
-						</button>
 					</div>
 				</div>
 
