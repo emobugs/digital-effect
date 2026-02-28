@@ -12,8 +12,8 @@ const NAV_LINKS = [
 
 const SOCIAL_LINKS = [
 	{ label: "Facebook", href: "https://www.facebook.com/digitalleffect/" },
-	{ label: "Instagram", href: "https://instagram.com" },
-	{ label: "LinkedIn", href: "https://linkedin.com" },
+	{ label: "Instagram", href: "https://www.instagram.com/digital.effect.bg/" },
+	// { label: "LinkedIn", href: "https://linkedin.com" },
 ];
 
 export default function Footer() {
@@ -60,16 +60,16 @@ export default function Footer() {
 					</p>
 					<div className="flex flex-col gap-3 mb-8">
 						<a
-							href="mailto:hello@digitaleffect.bg"
+							href="mailto:thedigitaleffectagency@gmail.com"
 							className="text-[13px] text-white/50 hover:text-white transition-colors duration-300"
 						>
-							hello@digitaleffect.bg
+							thedigitaleffectagency@gmail.com
 						</a>
 						<a
-							href="tel:+359888000000"
+							href="tel:+359 89 588 3713"
 							className="text-[13px] text-white/50 hover:text-white transition-colors duration-300"
 						>
-							+359 888 000 000
+							+359 89 588 3713
 						</a>
 					</div>
 
