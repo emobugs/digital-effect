@@ -50,7 +50,7 @@ const PACKAGES = [
 		tagline: "Дизайн & Разработка",
 		price: "400",
 		priceLabel: " / поддръжка от €80",
-		badge: "−50% · Първите 5 клиента",
+		badge: "−50% · Остават 4/5",
 		gradient: "from-[#c0300a] via-[#e8450a] to-[#f26522]",
 		description:
 			"Модерни уебсайтове и landing pages, оптимизирани за конверсия. От дизайн до деплой — и поддръжка след това ако е нужна.",
@@ -86,6 +86,7 @@ const PACKAGES = [
 function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	const isAuto = pkg.name === "Автоматизация";
 	const ref = useRef<HTMLDivElement>(null);
+	const isDiscount = pkg.badge?.includes("−");
 
 	useEffect(() => {
 		const el = ref.current;
@@ -145,7 +146,14 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 				)}
 				{pkg.badge && (
 					<div
-						className={`absolute top-3 left-[90%] -translate-x-[90%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap ${isAuto ? "bg-gradient-to-r from-violet-600 to-purple-500" : "bg-gradient-to-r from-[#e8450a] to-[#f26522]"}`}
+						className={`absolute top-8 left-[90%] -translate-x-[90%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap 
+							${
+								isAuto
+									? "bg-gradient-to-r from-violet-600 to-purple-500"
+									: isDiscount
+										? "bg-gradient-to-r from-emerald-700 to-emerald-500"
+										: " bg-gradient-to-r from-[#e8450a] to-[#f26522]"
+							}`}
 					>
 						{pkg.badge}
 					</div>
