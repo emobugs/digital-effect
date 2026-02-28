@@ -50,7 +50,7 @@ const PACKAGES = [
 		tagline: "Дизайн & Разработка",
 		price: "400",
 		priceLabel: " / поддръжка от €80",
-		badge: null,
+		badge: "−50% · Първите 5 клиента",
 		gradient: "from-[#c0300a] via-[#e8450a] to-[#f26522]",
 		description:
 			"Модерни уебсайтове и landing pages, оптимизирани за конверсия. От дизайн до деплой — и поддръжка след това ако е нужна.",
@@ -219,6 +219,7 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	const [flipped, setFlipped] = useState(false);
 	const isAuto = pkg.name === "Автоматизация";
+	const isDiscount = pkg.badge?.includes("−");
 
 	return (
 		<div
@@ -243,10 +244,12 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 				>
 					{pkg.badge && (
 						<div
-							className={`absolute top-4 left-1/2 -translate-x-1/2 z-10 px-4 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap ${
+							className={`absolute top-4 left-1/2 -translate-x-1/2 z-10 px-4 py-1 rounded-full text-[12px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap ${
 								isAuto
 									? "bg-gradient-to-r from-violet-600 to-purple-500"
-									: "bg-gradient-to-r from-[#e8450a] to-[#f26522]"
+									: isDiscount
+										? "bg-gradient-to-r from-emerald-700 to-emerald-500"
+										: " bg-gradient-to-r from-[#e8450a] to-[#f26522]"
 							}`}
 						>
 							{pkg.badge}
