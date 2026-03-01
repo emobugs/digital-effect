@@ -24,7 +24,7 @@ const PROJECTS = [
 		num: "02",
 		name: "Robert Key",
 		category: "Уеб дизайн & Разработка",
-		tags: ["React", "SEO", "Local Business", "Leads"],
+		tags: ["React", "SEO", "Local Business", "Leads", "Meta ads"],
 		description:
 			"Landing page за авариен ключар в Силистра. Фокус върху бърза конверсия — телефонен номер на видно място, SEO оптимизация за локално търсене.",
 		url: "https://robertkey.vercel.app",
@@ -52,30 +52,71 @@ const PROJECTS = [
 export default function Projects() {
 	const container = useRef<HTMLElement>(null);
 	const imageRef = useRef<HTMLDivElement>(null);
+	const infoRef = useRef<HTMLDivElement>(null);
+	const ctaRef = useRef<HTMLDivElement>(null);
+
 	const [active, setActive] = useState(0);
 
-	const goTo = (next: number) => {
-		const el = imageRef.current;
-		if (!el) return;
+	const goTo = (nextIndex: number, dir: number) => {
+		if (active === nextIndex) return;
 
-		gsap.to(el, {
-			opacity: 0,
-			y: 10,
-			duration: 0.25,
-			ease: "power2.in",
-			onComplete: () => {
-				setActive(next);
-				gsap.fromTo(
-					el,
-					{ opacity: 0, y: -10 },
-					{ opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-				);
+		const tl = gsap.timeline();
+
+		const titleEl = infoRef.current;
+		const imageEl = imageRef.current;
+		const ctaEl = ctaRef.current;
+
+		if (!titleEl || !imageEl || !ctaEl) return;
+
+		const titleExitX = -60 * dir;
+		const imageExitX = 60 * dir;
+
+		tl.to(
+			titleEl,
+			{
+				x: titleExitX,
+				opacity: 0,
+				duration: 0.7,
+				ease: "power2.in",
 			},
-		});
+			0,
+		)
+			.to(
+				imageEl,
+				{
+					x: imageExitX,
+					opacity: 0,
+					duration: 0.7,
+					ease: "power2.in",
+				},
+				0,
+			)
+			.to(ctaEl, { x: titleExitX, opacity: 0, duration: 0.7, ease: "power2.in" }, 0)
+			// 2. Сменяме съдържанието точно тук
+			.add(() => setActive(nextIndex))
+			// 3. Новият елемент се подготвя мигновено отляво (без анимация)
+			.set(titleEl, { x: -titleExitX, opacity: 0 })
+			.set(imageEl, { x: -imageExitX, opacity: 0 })
+			.set(ctaEl, { x: -titleExitX, opacity: 0 }) // Идва отгоре
+			// 4. Новият елемент влиза плавно
+			.to([titleEl, imageEl, ctaEl], {
+				x: 0,
+				y: 0,
+				opacity: 1,
+				duration: 0.7,
+				ease: "power2.out",
+				stagger: 0.04,
+			});
 	};
 
-	const prev = () => goTo((active - 1 + PROJECTS.length) % PROJECTS.length);
-	const next = () => goTo((active + 1) % PROJECTS.length);
+	const prev = () => {
+		const nextIndex = (active - 1 + PROJECTS.length) % PROJECTS.length;
+		goTo(nextIndex, 1);
+	};
+	const next = () => {
+		const nextIndex = (active + 1) % PROJECTS.length;
+		goTo(nextIndex, -1);
+	};
 
 	useGSAP(
 		() => {
@@ -108,7 +149,11 @@ export default function Projects() {
 	const project = PROJECTS[active];
 
 	return (
-		<section ref={container} id="projects" className="py-24 px-4 md:px-16 bg-dark-charcoal">
+		<section
+			ref={container}
+			id="projects"
+			className="py-8 md:py-16 px-4 md:px-16 bg-dark-charcoal"
+		>
 			{/* HEADER */}
 			<div className="projects-head mb-6 md:mb-12 max-sm:text-center">
 				<span className="section-label">Нашата работа</span>
@@ -128,7 +173,7 @@ export default function Projects() {
 						{PROJECTS.map((_, i) => (
 							<button
 								key={i}
-								onClick={() => goTo(i)}
+								onClick={() => goTo(i, 1)}
 								className={` rounded-full transition-all duration-300 ${
 									i === active
 										? "w-3 bg-gradient-to-r from-[#e8450a] to-[#f26522]"
@@ -139,33 +184,38 @@ export default function Projects() {
 					</div>
 
 					{/* Project info */}
-					<div className="flex flex-col items-center md:items-start justify-between min-h-[360px]">
+					<div
+						ref={infoRef}
+						className="flex flex-col items-center md:items-start justify-between min-h-[280px]"
+					>
 						<p className="text-[10px] font-semibold tracking-[3px] uppercase text-[#f26522] mb-1">
 							{project.category} · {project.year}
 						</p>
-						<h3 className="font-display font-black text-[32px] md:text-[40px] leading-tight mb-4">
+						<h3 className="font-display font-black text-[32px] md:text-[40px] leading-tight mb-2">
 							{project.name}
 						</h3>
-						<p className="text-[14px] text-white/50 leading-relaxed mb-6 text-center md:text-left">
+						<p className="text-[14px] text-white/50 leading-relaxed mb-2 text-center md:text-left">
 							{project.description}
 						</p>
-						{project.stats && (
-							<div className="grid grid-cols-3 gap-4 py-4 border-y border-white/[0.06]">
-								{project.stats.map((s) => (
-									<div key={s.label}>
-										<div className="font-display font-black text-[22px] text-gradient leading-none mb-1">
-											{s.value}
+						<div className="w-full">
+							{project.stats && (
+								<div className="grid grid-cols-3 gap-4 py-4 border-y border-white/[0.06]">
+									{project.stats.map((s) => (
+										<div key={s.label}>
+											<div className="font-display font-black text-[22px] text-gradient leading-none mb-1">
+												{s.value}
+											</div>
+											<div className="text-[10px] text-white/35 tracking-[1.5px] uppercase">
+												{s.label}
+											</div>
 										</div>
-										<div className="text-[10px] text-white/35 tracking-[1.5px] uppercase">
-											{s.label}
-										</div>
-									</div>
-								))}
-							</div>
-						)}
+									))}
+								</div>
+							)}
+						</div>
 
 						{/* Tags */}
-						<div className="flex flex-wrap gap-2 mb-8">
+						<div className="flex flex-wrap gap-2 mt-auto justify-center">
 							{project.tags.map((tag) => (
 								<span
 									key={tag}
@@ -176,7 +226,7 @@ export default function Projects() {
 							))}
 						</div>
 					</div>
-					<div className="flex gap-8">
+					<div className="flex gap-6 mt-auto">
 						{/* CTA */}
 						<div className="flex gap-3 mt-2">
 							<button
@@ -193,25 +243,27 @@ export default function Projects() {
 							</button>
 						</div>
 						{/* Arrow navigation */}
-						{project.url ? (
-							<a
-								href={project.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="btn-primary inline-flex items-center gap-2"
-							>
-								Виж проекта
-								<ArrowUpRight className="w-4 h-4" />
-							</a>
-						) : (
-							<a
-								href="#cta"
-								className="btn-ghost inline-flex items-center text-[10px] gap-2"
-							>
-								Бъди следващия
-								<ArrowRight className="w-4 h-4" />
-							</a>
-						)}
+						<div ref={ctaRef} className="flex gap-8">
+							{project.url ? (
+								<a
+									href={project.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="btn-primary inline-flex justify-around items-center gap-2 p-4"
+								>
+									<span className="">Виж проекта</span>
+									<ArrowUpRight className="w-4 h-4" />
+								</a>
+							) : (
+								<a
+									href="#cta"
+									className="btn-ghost  inline-flex justify-around items-center gap-2 p-4"
+								>
+									<span>Бъди следващия</span>
+									<ArrowRight className="w-4 h-4" />
+								</a>
+							)}
+						</div>
 					</div>
 				</div>
 
