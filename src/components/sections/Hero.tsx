@@ -14,11 +14,14 @@ export default function Hero() {
 	const container = useRef<HTMLElement>(null);
 	useGSAP(
 		() => {
-			gsap.from(".hero-item", {
-				opacity: 0,
-				y: 36,
-				duration: 0.6,
+			gsap.set(".hero-item", { opacity: 0, x: -30 });
+			const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+			tl.to(".hero-item", {
+				autoAlpha: 1,
+				x: 0,
+				duration: 0.7,
 				stagger: 0.2,
+				delay: 0.1,
 				ease: "power2.out",
 			});
 		},
@@ -41,7 +44,7 @@ export default function Hero() {
 
 			{/* HEADLINE */}
 			<h1
-				className="hero-item text-center font-display font-black uppercase leading-[0.93] tracking-[-3px]"
+				className="antialiased hero-item text-center font-display font-black uppercase leading-[0.93] tracking-[-3px]"
 				style={{ fontSize: "clamp(44px, 8.5vw, 118px)" }}
 			>
 				Изграждаме

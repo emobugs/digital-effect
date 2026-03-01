@@ -11,6 +11,9 @@
 		cursor: none !important;
 	}
 
+	html {
+		overflow-x: hidden;
+	}
 	body {
 		@apply bg-dark-obsidian text-white antialiased overflow-x-hidden;
 		/* cursor: none; */
@@ -20,6 +23,16 @@
 	::selection {
 		background: rgba(232, 69, 10, 0.35);
 		color: #fff;
+	}
+
+	.cta-head,
+	.cta-body > * {
+		will-change: transform, opacity;
+	}
+
+	.hero-item {
+		opacity: 0;
+		visibility: hidden;
 	}
 }
 
@@ -51,11 +64,15 @@
 		letter-spacing: -1.5px;
 	}
 
-	/* Buttons */
-	.btn-primary {
+	.btn {
 		@apply relative inline-flex items-center justify-center px-11 py-[18px]
            font-display text-[12px] font-bold tracking-[2.5px] uppercase text-white
            rounded-[4px] overflow-hidden transition-all duration-300;
+	}
+
+	/* Buttons */
+	.btn-primary {
+		@apply btn;
 		background: linear-gradient(135deg, #e8450a, #f26522);
 	}
 
@@ -75,10 +92,7 @@
 	}
 
 	.btn-ghost {
-		@apply inline-flex items-center justify-center px-11 py-[18px]
-           font-display text-[12px] font-bold tracking-[2.5px] uppercase text-white/80
-           rounded-[4px] border border-white/25 backdrop-blur-sm
-           transition-all duration-300;
+		@apply btn;
 		background: rgba(255, 255, 255, 0.06);
 	}
 
