@@ -146,12 +146,12 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 				)}
 				{pkg.badge && (
 					<div
-						className={`absolute top-2 left-[95%] -translate-x-[90%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap 
+						className={`absolute left-[95%] -translate-x-[95%] px-3 py-1 rounded-full text-[10px] font-bold tracking-[2px] uppercase text-white whitespace-nowrap 
 							${
 								isAuto
-									? "bg-gradient-to-r from-violet-600 to-purple-500"
+									? "bg-gradient-to-r from-violet-600 to-purple-500 top-2"
 									: isDiscount
-										? "bg-gradient-to-r from-emerald-700 to-emerald-500"
+										? "bg-gradient-to-r from-emerald-700 to-emerald-500 bottom-10"
 										: " bg-gradient-to-r from-[#e8450a] to-[#f26522]"
 							}`}
 					>
