@@ -26,13 +26,15 @@ export default function CTA() {
 		() => {
 			gsap.fromTo(
 				".cta-head",
-				{ opacity: 0, y: 40 },
+				{ opacity: 0, x: 40 },
 				{
 					opacity: 1,
-					y: 0,
+					x: 0,
 					duration: 0.7,
+					force3D: true,
 					ease: "power2.out",
-					scrollTrigger: { trigger: ".cta-head", start: "top 85%" },
+					scrollTrigger: { trigger: ".cta-head", start: "top 90%" },
+					toggleActions: "play none none none",
 				},
 			);
 			gsap.fromTo(
@@ -72,7 +74,7 @@ export default function CTA() {
 	};
 
 	return (
-		<section ref={container} id="cta" className="py-24 px-4 md:px-16">
+		<section ref={container} id="cta" className="md:py-24 py-12 px-4 md:px-16">
 			{/* HEADER */}
 			<div className="cta-head text-center mb-16">
 				<span className="section-label">Свържи се с нас</span>
