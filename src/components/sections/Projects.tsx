@@ -61,6 +61,7 @@ export default function Projects() {
 		if (active === nextIndex) return;
 
 		const tl = gsap.timeline();
+		const isMobile = window.innerWidth < 768;
 
 		const titleEl = infoRef.current;
 		const imageEl = imageRef.current;
@@ -68,8 +69,14 @@ export default function Projects() {
 
 		if (!titleEl || !imageEl || !ctaEl) return;
 
-		const titleExitX = -60 * dir;
-		const imageExitX = 60 * dir;
+		let titleExitX, imageExitX;
+		if (isMobile) {
+			titleExitX = -60 * dir;
+			imageExitX = 60 * dir;
+		} else {
+			titleExitX = -60 * dir;
+			imageExitX = -60 * dir;
+		}
 
 		tl.to(
 			titleEl,
