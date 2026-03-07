@@ -100,7 +100,7 @@ export default function CTA() {
 
 						{/* Email */}
 						<div className="flex items-center gap-3 mb-4 group">
-							{/* Иконка — на мобилен е линк, на десктоп е декорация */}
+							{/* Иконк — на мобилен е линк, на десктоп е декорация */}
 							<a
 								href="mailto:digitaleffect@gmail.com"
 								className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300 flex-shrink-0"
@@ -152,7 +152,7 @@ export default function CTA() {
 								)}
 							</button>
 
-							{/* Мобилен — кликабелен текст (набира директно) */}
+							{/* Мобилен — кликабъл текст (набира директно) */}
 							<a
 								href="tel:+359895883713"
 								className="md:hidden text-[13px] text-white/50"

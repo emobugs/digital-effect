@@ -49,7 +49,7 @@ function StatCell({
 			variants={container}
 			className="relative bg-dark-surface md:px-11 md:py-19 p-8 overflow-hidden group"
 		>
-			{/* Gradient top line — анимира се при влизане във viewport */}
+			{/* Gradient top line — това, което се анимира при влизане във viewport */}
 			<motion.div
 				variants={item}
 				className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-[#c0300a] via-[#e8450a] to-[#f26522] scale-x-0 group-[.visible]:scale-x-100 origin-left transition-transform duration-700"

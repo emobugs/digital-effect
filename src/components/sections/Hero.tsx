@@ -88,7 +88,7 @@ export default function Hero() {
 				))}
 			</div>
 
-			{/* SCROLL INDICATOR */}
+			{/* SCROLL INDICAOR */}
 			<div
 				className="hidden absolute bottom-10 left-1/2 -translate-x-1/2 md:flex flex-col items-center gap-2 text-white/25 text-[10px] tracking-[3px] uppercase"
 				style={{ animationDelay: "500ms" }}

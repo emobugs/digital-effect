@@ -99,13 +99,10 @@ export default function Projects() {
 				0,
 			)
 			.to(ctaEl, { x: titleExitX, opacity: 0, duration: 0.7, ease: "power2.in" }, 0)
-			// 2. Сменяме съдържанието точно тук
 			.add(() => setActive(nextIndex))
-			// 3. Новият елемент се подготвя мигновено отляво (без анимация)
 			.set(titleEl, { x: -titleExitX, opacity: 0 })
 			.set(imageEl, { x: -imageExitX, opacity: 0 })
-			.set(ctaEl, { x: -titleExitX, opacity: 0 }) // Идва отгоре
-			// 4. Новият елемент влиза плавно
+			.set(ctaEl, { x: -titleExitX, opacity: 0 })
 			.to([titleEl, imageEl, ctaEl], {
 				x: 0,
 				y: 0,
