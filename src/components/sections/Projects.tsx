@@ -27,9 +27,9 @@ const PROJECTS = [
 		category: "Уеб дизайн & Разработка",
 		tags: ["React", "SEO", "Local Business", "Leads", "Meta ads"],
 		description:
-			"Landing page за авариен ключар в Силистра. Фокус върху бърза конверсия — телефонен номер на видно място, SEO оптимизация за локално търсене.",
+			"Landing page за авариен ключар в Силистра с пълен SEO монопол — #1 в Google по всички ключови думи за ключарски услуги в града. Нито един конкурент не се показва преди него.",
 		url: "https://robertkey.vercel.app",
-		image: "/projects/robertkey.png",
+		image: "/projects/robert-key.png",
 		mobileImage: "/projects/robert-mobile.png",
 		year: "2025",
 	},
@@ -64,7 +64,7 @@ const PROJECTS = [
 			"REST API",
 		],
 		description:
-			"Многоезичен хотелски уебсайт с онлайн резервации в реално време и автоматизирани имейл потвърждения. Интеграция с VikBooking backend и поддръжка на 4 езика (BG, EN, RU, RO).",
+			"Многоезичен хотелски уебсайт с онлайн резервации в реално време и автоматизирани имейл потвърждения. Интеграция с VikBooking backend чрез наш Custom Rest Api и поддръжка на 4 езика (BG, EN, RU, RO).",
 		url: "https://danube-hotel.bg",
 		image: "/projects/danube.png",
 		mobileImage: "/projects/danube-mobile.png",
@@ -76,37 +76,13 @@ const PROJECTS = [
 		category: "Уеб дизайн & Разработка",
 		tags: ["HTML/CSS", "Vanilla JS", "GSAP", "Node.js", "SQLite", "Referral System"],
 		description:
-			"Бизнес сайт за строителна фирма в Силистра с анимиран hero, интерактивна услуги секция (тухлена анимация) и персонализирана реферална система с комисионни нива и QR кодове.",
+			"Интерактивен уебсайт за строителна фирма, изцяло съобразен с нишата — визия, усещане и функционалност, създадени специално за строителния бранш.",
 		url: "https://migama.bg",
 		image: "/projects/migama.png",
 		mobileImage: "/projects/migama-mobile.png",
 		year: "2025",
 	},
 ];
-
-function PhoneMockup({ src }: { src: string }) {
-	return (
-		<div className="relative flex-shrink-0" style={{ width: 90 }}>
-			{/* Screenshot зад frame-а */}
-			<div
-				className="absolute overflow-hidden"
-				style={{
-					inset: "2.5% 4% 3% 4%",
-					borderRadius: "10px",
-				}}
-			>
-				<img src={src} alt="mobile preview" className="w-full h-auto block" />
-			</div>
-			{/* Phone frame отпред */}
-			<img
-				src="/phone-frame.png"
-				alt=""
-				className="relative w-full pointer-events-none select-none"
-				style={{ display: "block" }}
-			/>
-		</div>
-	);
-}
 
 export default function Projects() {
 	const container = useRef<HTMLElement>(null);
@@ -353,7 +329,7 @@ export default function Projects() {
 
 				{/* RIGHT — image card */}
 				<div ref={imageRef} className="relative">
-					{/* Desktop scroll preview + phone mockup вътре */}
+					{/* Desktop scroll preview */}
 					<div
 						className="overflow-hidden rounded-[8px] relative cursor-pointer"
 						style={{ aspectRatio: "5/4" }}
@@ -361,27 +337,28 @@ export default function Projects() {
 						onMouseLeave={handleDesktopMouseLeave}
 					>
 						{PROJECTS.map((p, i) => (
-							<div
+							<img
 								key={p.num}
-								className={`absolute inset-0 ${i === active ? "block" : "hidden"}`}
-							>
-								{/* Desktop image */}
-								<img
-									ref={i === active ? desktopImgRef : undefined}
-									src={p.image}
-									alt={p.name}
-									className="w-full absolute top-0 left-0"
-									style={{ height: "auto" }}
-								/>
-								{/* Phone mockup — долу вдясно, застъпва desktop */}
-								{p.mobileImage && (
-									<div className="absolute bottom-0 right-0 z-10 drop-shadow-2xl translate-x-[15%] translate-y-[15%]">
-										<PhoneMockup src={p.mobileImage} />
-									</div>
-								)}
-							</div>
+								ref={i === active ? desktopImgRef : undefined}
+								src={p.image}
+								alt={p.name}
+								className={`w-full absolute top-0 left-0 ${i === active ? "block" : "hidden"}`}
+								style={{ height: "auto" }}
+							/>
 						))}
 					</div>
+
+					{/* Phone mockups — извън overflow-hidden, absolute спрямо imageRef */}
+					{PROJECTS.map((p, i) =>
+						p.mobileImage ? (
+							<img
+								key={p.num}
+								src={p.mobileImage}
+								alt={`${p.name} mobile`}
+								className={`absolute md:bottom-40 bottom-20 right-0 z-10 drop-shadow-2xl translate-x-[30%] translate-y-[10%] w-[48%] h-auto ${i === active ? "block" : "hidden"}`}
+							/>
+						) : null,
+					)}
 
 					{/* overlay линк */}
 					{project.url && (
