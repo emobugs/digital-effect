@@ -37,6 +37,14 @@ export const metadata: Metadata = {
 		siteName: "Digital Effect",
 		locale: "bg_BG",
 		type: "website",
+		images: [
+			{
+				url: "/og-image.png",
+				width: 1200,
+				height: 630,
+				alt: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
+			},
+		],
 	},
 	robots: {
 		index: true,
