@@ -17,6 +17,7 @@ export const NAV_LINKS = [
 	{ label: "Услуги", href: "#services" },
 	{ label: "Пакети", href: "#packages" },
 	{ label: "Процес", href: "#process" },
+	{ label: "Проекти", href: "#projects" },
 	{ label: "Контакт", href: "#cta" },
 ];
 export const PILLARS = [

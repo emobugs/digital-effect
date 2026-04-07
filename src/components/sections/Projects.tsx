@@ -18,6 +18,7 @@ const PROJECTS = [
 			"Корпоративен уебсайт за дистрибутор на EV и соларни батерийни решения. Модерен дизайн съобразен с B2B аудитория и технически продукти.",
 		url: "https://northpart.com",
 		image: "/projects/northpart.png",
+		mobileImage: "/projects/northpart-mobile.png",
 		year: "2025",
 	},
 	{
@@ -29,6 +30,7 @@ const PROJECTS = [
 			"Landing page за авариен ключар в Силистра. Фокус върху бърза конверсия — телефонен номер на видно място, SEO оптимизация за локално търсене.",
 		url: "https://robertkey.vercel.app",
 		image: "/projects/robertkey.png",
+		mobileImage: "/projects/robert-mobile.png",
 		year: "2025",
 	},
 	{
@@ -40,6 +42,7 @@ const PROJECTS = [
 			"Рекламни кампании за магазин за парфюми. $1.07K инвестиция, 303K reach и 1.68M impressions с CPM от само $0.64.",
 		url: null,
 		image: "/projects/aromasecret.png",
+		mobileImage: null,
 		year: "2025",
 		stats: [
 			{ label: "Reach", value: "303K" },
@@ -64,6 +67,7 @@ const PROJECTS = [
 			"Многоезичен хотелски уебсайт с онлайн резервации в реално време и автоматизирани имейл потвърждения. Интеграция с VikBooking backend и поддръжка на 4 езика (BG, EN, RU, RO).",
 		url: "https://danube-hotel.bg",
 		image: "/projects/danube.png",
+		mobileImage: "/projects/danube-mobile.png",
 		year: "2025",
 	},
 	{
@@ -75,15 +79,41 @@ const PROJECTS = [
 			"Бизнес сайт за строителна фирма в Силистра с анимиран hero, интерактивна услуги секция (тухлена анимация) и персонализирана реферална система с комисионни нива и QR кодове.",
 		url: "https://migama.bg",
 		image: "/projects/migama.png",
+		mobileImage: "/projects/migama-mobile.png",
 		year: "2025",
 	},
 ];
+
+function PhoneMockup({ src }: { src: string }) {
+	return (
+		<div className="relative flex-shrink-0" style={{ width: 90 }}>
+			{/* Screenshot зад frame-а */}
+			<div
+				className="absolute overflow-hidden"
+				style={{
+					inset: "2.5% 4% 3% 4%",
+					borderRadius: "10px",
+				}}
+			>
+				<img src={src} alt="mobile preview" className="w-full h-auto block" />
+			</div>
+			{/* Phone frame отпред */}
+			<img
+				src="/phone-frame.png"
+				alt=""
+				className="relative w-full pointer-events-none select-none"
+				style={{ display: "block" }}
+			/>
+		</div>
+	);
+}
 
 export default function Projects() {
 	const container = useRef<HTMLElement>(null);
 	const imageRef = useRef<HTMLDivElement>(null);
 	const infoRef = useRef<HTMLDivElement>(null);
 	const ctaRef = useRef<HTMLDivElement>(null);
+	const desktopImgRef = useRef<HTMLImageElement>(null);
 
 	const [active, setActive] = useState(0);
 
@@ -129,7 +159,13 @@ export default function Projects() {
 				0,
 			)
 			.to(ctaEl, { x: titleExitX, opacity: 0, duration: 0.7, ease: "power2.in" }, 0)
-			.add(() => setActive(nextIndex))
+			.add(() => {
+				setActive(nextIndex);
+				// Reset desktop scroll position при смяна на проект
+				if (desktopImgRef.current) {
+					gsap.set(desktopImgRef.current, { y: 0 });
+				}
+			})
 			.set(titleEl, { x: -titleExitX, opacity: 0 })
 			.set(imageEl, { x: -imageExitX, opacity: 0 })
 			.set(ctaEl, { x: -titleExitX, opacity: 0 })
@@ -150,6 +186,20 @@ export default function Projects() {
 	const next = () => {
 		const nextIndex = (active + 1) % PROJECTS.length;
 		goTo(nextIndex, -1);
+	};
+
+	const handleDesktopMouseEnter = () => {
+		const img = desktopImgRef.current;
+		const container = img?.parentElement as HTMLElement | null;
+		if (!img || !container) return;
+		const renderedHeight = img.naturalHeight * (container.clientWidth / img.naturalWidth);
+		const maxY = -(renderedHeight - container.clientHeight);
+		if (maxY >= 0) return;
+		gsap.to(img, { y: maxY, duration: 4, ease: "none" });
+	};
+
+	const handleDesktopMouseLeave = () => {
+		gsap.to(desktopImgRef.current, { y: 0, duration: 1.2, ease: "power2.out" });
 	};
 
 	useGSAP(
@@ -303,45 +353,48 @@ export default function Projects() {
 
 				{/* RIGHT — image card */}
 				<div ref={imageRef} className="relative">
-					<div className="relative rounded-[4px] overflow-hidden border border-white/[0.07] aspect-[16/11] bg-dark-surface">
+					{/* Desktop scroll preview + phone mockup вътре */}
+					<div
+						className="overflow-hidden rounded-[8px] relative cursor-pointer"
+						style={{ aspectRatio: "5/4" }}
+						onMouseEnter={handleDesktopMouseEnter}
+						onMouseLeave={handleDesktopMouseLeave}
+					>
 						{PROJECTS.map((p, i) => (
 							<div
 								key={p.num}
-								className={`absolute inset-0 transition-none ${i === active ? "block" : "hidden"}`}
+								className={`absolute inset-0 ${i === active ? "block" : "hidden"}`}
 							>
-								{p.image ? (
-									<img
-										src={p.image}
-										alt={p.name}
-										className="w-full h-full object-cover"
-									/>
-								) : (
-									<div className="w-full h-full flex flex-col items-center justify-center gap-4">
-										<div className="w-16 h-16 rounded-full border border-white/[0.07] flex items-center justify-center">
-											<span className="font-display font-black text-[24px] text-white/10">
-												{p.num}
-											</span>
-										</div>
-										<p className="text-[12px] text-white/20 tracking-[2px] uppercase">
-											Очаквайте скоро
-										</p>
+								{/* Desktop image */}
+								<img
+									ref={i === active ? desktopImgRef : undefined}
+									src={p.image}
+									alt={p.name}
+									className="w-full absolute top-0 left-0"
+									style={{ height: "auto" }}
+								/>
+								{/* Phone mockup — долу вдясно, застъпва desktop */}
+								{p.mobileImage && (
+									<div className="absolute bottom-0 right-0 z-10 drop-shadow-2xl translate-x-[15%] translate-y-[15%]">
+										<PhoneMockup src={p.mobileImage} />
 									</div>
 								)}
 							</div>
 						))}
-						{/* overlay линк */}
-						{project.url && (
-							<a
-								href={project.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 backdrop-blur-sm border border-white/[0.1] px-4 py-2 rounded-full text-[12px] text-white/70 hover:text-white transition-all duration-300 z-10"
-							>
-								{project.name}
-								<ArrowUpRight className="w-3 h-3" />
-							</a>
-						)}
 					</div>
+
+					{/* overlay линк */}
+					{project.url && (
+						<a
+							href={project.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 backdrop-blur-sm border border-white/[0.1] px-4 py-2 rounded-full text-[12px] text-white/70 hover:text-white transition-all duration-300 z-10"
+						>
+							{project.name}
+							<ArrowUpRight className="w-3 h-3" />
+						</a>
+					)}
 				</div>
 			</div>
 		</section>
