@@ -17,6 +17,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+	metadataBase: new URL("https://digitaleffect.bg"),
 	title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
 	description:
 		"Управление на социални мрежи, видео съдържание и дигитална стратегия за малки и средни бизнеси. Facebook, Instagram, TikTok.",
@@ -28,12 +29,18 @@ export const metadata: Metadata = {
 		"tiktok",
 		"digital effect",
 		"маркетинг агенция",
+		"маркетинг агенция България",
+		"уеб дизайн",
+		"реклама facebook",
 	],
 	authors: [{ name: "Digital Effect" }],
+	alternates: {
+		canonical: "https://digitaleffect.bg",
+	},
 	openGraph: {
 		title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
 		description: "Изграждаме система, не просто публикации.",
-		url: "https://digital-effect.vercel.app/",
+		url: "https://digitaleffect.bg",
 		siteName: "Digital Effect",
 		locale: "bg_BG",
 		type: "website",
@@ -46,10 +53,45 @@ export const metadata: Metadata = {
 			},
 		],
 	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
+		description: "Изграждаме система, не просто публикации.",
+		images: ["/og-image.png"],
+	},
 	robots: {
 		index: true,
 		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+		},
 	},
+};
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "ProfessionalService",
+	name: "Digital Effect",
+	url: "https://digitaleffect.bg",
+	logo: "https://digitaleffect.bg/logo.png",
+	description:
+		"Дигитална маркетинг агенция — управление на социални мрежи, уеб дизайн и разработка, платена реклама и дигитална стратегия.",
+	email: "hello@digitaleffect.bg",
+	areaServed: "BG",
+	availableLanguage: "Bulgarian",
+	serviceType: [
+		"Дигитален Маркетинг",
+		"Управление на Социални Мрежи",
+		"Уеб Дизайн",
+		"Уеб Разработка",
+		"Meta Ads",
+		"SEO",
+	],
+	sameAs: [
+		"https://www.facebook.com/digitalleffect/",
+		"https://www.instagram.com/digital.effect.bg",
+	],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -61,6 +103,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 			<link rel="manifest" href="/site.webmanifest" />
 			<body>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				/>
 				<Cursor />
 				{children}
 			</body>
