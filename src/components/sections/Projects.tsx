@@ -47,6 +47,36 @@ const PROJECTS = [
 			{ label: "CPM", value: "$0.64" },
 		],
 	},
+	{
+		num: "04",
+		name: "Hotel Danube",
+		category: "Уеб дизайн & Разработка",
+		tags: [
+			"Next.js",
+			"TypeScript",
+			"GSAP",
+			"Tailwind",
+			"Многоезичен",
+			"Booking System",
+			"REST API",
+		],
+		description:
+			"Многоезичен хотелски уебсайт с онлайн резервации в реално време и автоматизирани имейл потвърждения. Интеграция с VikBooking backend и поддръжка на 4 езика (BG, EN, RU, RO).",
+		url: "https://danube-hotel.bg",
+		image: "/projects/danube.png",
+		year: "2025",
+	},
+	{
+		num: "05",
+		name: "MIGAMA",
+		category: "Уеб дизайн & Разработка",
+		tags: ["HTML/CSS", "Vanilla JS", "GSAP", "Node.js", "SQLite", "Referral System"],
+		description:
+			"Бизнес сайт за строителна фирма в Силистра с анимиран hero, интерактивна услуги секция (тухлена анимация) и персонализирана реферална система с комисионни нива и QR кодове.",
+		url: "https://migama.bg",
+		image: "/projects/migama.png",
+		year: "2025",
+	},
 ];
 
 export default function Projects() {
@@ -273,7 +303,7 @@ export default function Projects() {
 
 				{/* RIGHT — image card */}
 				<div ref={imageRef} className="relative">
-					<div className="relative rounded-[4px] overflow-hidden border border-white/[0.07] aspect-[4/3] bg-dark-surface">
+					<div className="relative rounded-[4px] overflow-hidden border border-white/[0.07] aspect-[16/11] bg-dark-surface">
 						{PROJECTS.map((p, i) => (
 							<div
 								key={p.num}
