@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ArrowRight, Mail, Phone, Copy, Check as CheckIcon } from "lucide-react";
+import { FaViber } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -123,21 +124,30 @@ export default function CTA() {
 
 							{/* Мобилен — кликабелен текст */}
 							<a
-								href="mailto:thedigitaleffectagency@gmail.com"
+								href="mailto:contacts@digitaleffect.bg"
 								className="md:hidden text-[13px] text-white/50"
 							>
-								thedigitaleffectagency@gmail.com
+								contacts@digitaleffect.bg
 							</a>
 						</div>
 
 						{/* Phone */}
 						<div className="flex items-center gap-3 group">
-							<a
-								href="tel:+359895883713"
-								className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300 flex-shrink-0"
-							>
-								<Phone className="w-4 h-4 text-[#f26522]" />
-							</a>
+							<div className="flex gap-2 flex-shrink-0">
+								<a
+									href="tel:+359895883713"
+									className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center hover:border-[#f26522]/30 transition-colors duration-300"
+								>
+									<Phone className="w-4 h-4 text-[#f26522]" />
+								</a>
+								<a
+									href="viber://chat?number=%2B359895883713"
+									className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center hover:border-[#7360f2]/50 transition-colors duration-300"
+									title="Viber"
+								>
+									<FaViber className="w-4 h-4 text-[#7360f2]" />
+								</a>
+							</div>
 
 							{/* Десктоп — copy on click */}
 							<button
@@ -169,9 +179,9 @@ export default function CTA() {
 							Работно време
 						</p>
 						<p className="text-[13px] text-white/45 leading-relaxed">
-							Пон – Пет: 09:00 – 18:00
-							<br />
-							Съб – Нед: По договаряне
+							Пон – Нед: 09:00 – 18:00
+							{/* <br />
+							Съб – Нед: По договаряне */}
 						</p>
 					</div>
 				</div>
