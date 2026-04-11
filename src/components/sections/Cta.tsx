@@ -103,7 +103,7 @@ export default function CTA() {
 						<div className="flex items-center gap-3 mb-4 group">
 							{/* Иконк — на мобилен е линк, на десктоп е декорация */}
 							<a
-								href="mailto:digitaleffect@gmail.com"
+								href="mailto:contacts@digitaleffect.bg"
 								className="w-11 h-11 rounded-full border border-white/[0.07] flex items-center justify-center group-hover:border-[#f26522]/30 transition-colors duration-300 flex-shrink-0"
 							>
 								<Mail className="w-4 h-4 text-[#f26522]" />
