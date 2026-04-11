@@ -114,7 +114,7 @@ export default function CTA() {
 								onClick={() => copyTo("digitaleffect@gmail.com", "email")}
 								className="hidden md:flex items-center gap-2 text-[13px] text-white/50 hover:text-white transition-colors duration-300"
 							>
-								thedigitaleffectagency@gmail.com
+								contacts@digitaleffect.bg{" "}
 								{copied === "email" ? (
 									<CheckIcon className="w-3 h-3 text-[#f26522] flex-shrink-0" />
 								) : (
