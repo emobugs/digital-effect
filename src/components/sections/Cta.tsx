@@ -111,7 +111,7 @@ export default function CTA() {
 
 							{/* Десктоп — copy on click */}
 							<button
-								onClick={() => copyTo("digitaleffect@gmail.com", "email")}
+								onClick={() => copyTo("contacts@digitaleffect.bg", "email")}
 								className="hidden md:flex items-center gap-2 text-[13px] text-white/50 hover:text-white transition-colors duration-300"
 							>
 								contacts@digitaleffect.bg{" "}
