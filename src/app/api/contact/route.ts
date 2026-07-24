@@ -83,7 +83,8 @@ export async function POST(req: Request) {
 		if (error) {
 			console.error("Resend error:", error);
 			return NextResponse.json(
-				{ error: "Възникна грешка при изпращането." },
+				// ВРЕМЕННО за дебъг: връщаме реалната Resend грешка.
+				{ error: "Възникна грешка при изпращането.", debug: error },
 				{ status: 502 },
 			);
 		}
@@ -92,8 +93,18 @@ export async function POST(req: Request) {
 		return NextResponse.json({ ok: true, id: data?.id });
 	} catch (err) {
 		console.error("Contact route error:", err);
+		const e = err as { message?: string; name?: string; cause?: unknown };
 		return NextResponse.json(
-			{ error: "Възникна грешка при изпращането." },
+			{
+				error: "Възникна грешка при изпращането.",
+				// ВРЕМЕННО за дебъг:
+				debug: {
+					name: e?.name,
+					message: e?.message,
+					cause: String((e?.cause as { message?: string })?.message ?? e?.cause ?? ""),
+					hasKey: Boolean(process.env.RESEND_API_KEY),
+				},
+			},
 			{ status: 500 },
 		);
 	}
