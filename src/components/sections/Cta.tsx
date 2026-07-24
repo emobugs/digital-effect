@@ -6,14 +6,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ArrowRight, Mail, Phone, Copy, Check as CheckIcon } from "lucide-react";
 import { FaViber } from "react-icons/fa";
-import emailjs from "@emailjs/browser";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export default function CTA() {
 	const container = useRef<HTMLElement>(null);
 	const [form, setForm] = useState({ name: "", email: "", message: "" });
+	const [hp, setHp] = useState(""); // honeypot
 	const [sent, setSent] = useState(false);
+	const [sending, setSending] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 	const [copied, setCopied] = useState<"email" | "phone" | null>(null);
 	const formRef = useRef<HTMLFormElement>(null);
 
@@ -56,21 +58,28 @@ export default function CTA() {
 
 	const sendEmail = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (!formRef.current) return;
+		if (sending) return;
+		setSending(true);
+		setError(null);
 		try {
-			const result = await emailjs.sendForm(
-				"digital_effect",
-				"template_uz4id85",
-				formRef.current,
-				"kdG_3cmBdAuzpN3ke",
-			);
-			console.log("Success:", result.text);
+			const res = await fetch("/api/contact", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ ...form, company: hp }),
+			});
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) {
+				throw new Error(data?.error || "Възникна грешка при изпращането.");
+			}
 			setSent(true);
-			formRef.current.reset();
-		} catch (error) {
-			const err = error as { text: string };
-			console.error("Error:", err.text);
-			alert("Възникна грешка при изпращането.");
+			setForm({ name: "", email: "", message: "" });
+			formRef.current?.reset();
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : "Възникна грешка при изпращането.",
+			);
+		} finally {
+			setSending(false);
 		}
 	};
 
@@ -204,6 +213,17 @@ export default function CTA() {
 						</div>
 					) : (
 						<form ref={formRef} onSubmit={sendEmail} className="flex flex-col gap-5">
+							{/* Honeypot — скрито поле срещу ботове */}
+							<input
+								type="text"
+								name="company"
+								tabIndex={-1}
+								autoComplete="off"
+								aria-hidden="true"
+								className="hidden"
+								value={hp}
+								onChange={(e) => setHp(e.target.value)}
+							/>
 							<div className="flex flex-col gap-1.5">
 								<label className="text-[10px] font-semibold tracking-[2px] uppercase text-white/30">
 									Име
@@ -248,11 +268,15 @@ export default function CTA() {
 							</div>
 							<button
 								type="submit"
-								className="btn-primary w-full flex items-center justify-center gap-2 mt-2"
+								disabled={sending}
+								className="btn-primary w-full flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Изпрати съобщение
-								<ArrowRight className="w-4 h-4" />
+								{sending ? "Изпращане..." : "Изпрати съобщение"}
+								{!sending && <ArrowRight className="w-4 h-4" />}
 							</button>
+							{error && (
+								<p className="text-[12px] text-red-400 text-center">{error}</p>
+							)}
 							<p className="text-[10px] text-white/20 text-center">
 								Отговаряме до 24 часа · Без спам
 							</p>

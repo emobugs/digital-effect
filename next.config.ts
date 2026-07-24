@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  // output: "export" махнато — сайтът върви като Node app (Hostinger),
+  // за да работят API routes (/api/contact → Resend).
   images: {
     unoptimized: true,
   },
