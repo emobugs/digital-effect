@@ -11,6 +11,13 @@
 
 ---
 
+## 2026-07-24 — Resend fix (LIVE ✅)
+- Формата работи на прод. Основната причина за 502/401: **Hostinger uppercase-ваше API ключа** в env панела → `API key is invalid` (Resend ключът е case-sensitive). Реши се като ключът се пази с правилен case.
+- Next.js 16 Turbopack конфликт: build ползва `next build --webpack`; добавен празен `turbopack: {}` в next.config.ts за да върви и `next dev` чисто. Памет: `--max-old-space-size=1024`.
+- `resend` записан в package.json (^6.18.0) — първият install беше прекъснат от timeout и не записа манифеста → `Module not found: resend`.
+- Debug полетата в route.ts махнати след потвърждение.
+- ⚠️ Deploy напомняне: `RESEND_API_KEY` да е с точен case; ако панелът го чупи → разчитай на `.env.local`.
+
 ## 2026-07-24 — Resend интеграция за контактната форма
 - **Махнат** `output: "export"` от `next.config.ts` + изтрит дублиран празен `next.config.js` (сайтът върви като Node app, за да работят API routes).
 - **Инсталиран** `resend` (v6.18.0).

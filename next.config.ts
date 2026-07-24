@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   experimental: {
     cpus: 1,
   },
+  // Празен turbopack конфиг → заглушава конфликта "webpack config + Turbopack"
+  // в Next.js 16. Dev върви на Turbopack; `npm run build` ползва --webpack.
+  turbopack: {},
   webpack: (config, { dev }) => {
     if (!dev) {
       config.parallelism = 1;
