@@ -65,7 +65,7 @@ export default function CTA() {
 			const res = await fetch("/api/contact", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ ...form, company: hp }),
+				body: JSON.stringify({ ...form, hp_field: hp }),
 			});
 			const data = await res.json().catch(() => ({}));
 			if (!res.ok) {
@@ -216,7 +216,7 @@ export default function CTA() {
 							{/* Honeypot — скрито поле срещу ботове */}
 							<input
 								type="text"
-								name="company"
+								name="hp_field"
 								tabIndex={-1}
 								autoComplete="off"
 								aria-hidden="true"

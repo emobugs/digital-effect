@@ -36,10 +36,13 @@ export async function POST(req: Request) {
 		const name = String(body.name ?? "").trim();
 		const email = String(body.email ?? "").trim();
 		const message = String(body.message ?? "").trim();
-		const honeypot = String(body.company ?? "").trim(); // spam trap
+		const honeypot = String(body.hp_field ?? "").trim(); // spam trap
 
 		// Ботовете попълват скритото поле → тихо "успех".
-		if (honeypot) return NextResponse.json({ ok: true });
+		if (honeypot) {
+			console.warn("[contact] honeypot triggered, skipping send");
+			return NextResponse.json({ ok: true });
+		}
 
 		if (!name || !email || !message) {
 			return NextResponse.json(
@@ -60,7 +63,7 @@ export async function POST(req: Request) {
 			);
 		}
 
-		const { error } = await resend.emails.send({
+		const { data, error } = await resend.emails.send({
 			from: FROM,
 			to: TO,
 			replyTo: email,
@@ -85,7 +88,8 @@ export async function POST(req: Request) {
 			);
 		}
 
-		return NextResponse.json({ ok: true });
+		console.log("[contact] email sent, id:", data?.id);
+		return NextResponse.json({ ok: true, id: data?.id });
 	} catch (err) {
 		console.error("Contact route error:", err);
 		return NextResponse.json(
