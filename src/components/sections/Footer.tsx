@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 const NAV_LINKS = [
@@ -98,9 +99,12 @@ export default function Footer() {
 				<p className="text-[11px] text-white/20 tracking-[0.5px]">
 					© {year} Digital Effect. Всички права запазени.
 				</p>
-				<p className="text-[11px] text-white/15 tracking-[0.5px]">
-					Проектиран и разработен от Digital Effect
-				</p>
+				<div className="flex items-center gap-4 text-[11px] tracking-[0.5px]">
+					<Link href="/privacy" className="text-white/30 hover:text-white/60 transition-colors">
+						Политика за поверителност
+					</Link>
+					<span className="text-white/15">Проектиран и разработен от Digital Effect</span>
+				</div>
 			</div>
 		</footer>
 	);

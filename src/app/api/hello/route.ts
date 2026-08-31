@@ -7,9 +7,10 @@ import { profile, type Answers, type Behaviour, type Profile } from "@/lib/lead-
 //    Профилът НИКОГА не се връща към браузъра.
 export const runtime = "nodejs";
 
-const NOTIFY_TO = process.env.HELLO_NOTIFY_EMAIL || "contacts@digitaleffect.bg";
 const FROM = "Digital Effect <zapitvane@digitaleffect.bg>";
-const DEOS_URL = process.env.DEOS_HELLO_URL || "https://deos.digitaleffect.bg/api/hello";
+// Env се чете при всяка заявка (не при import), за да не остане „запечен“ стар адрес
+const notifyTo = () => process.env.HELLO_NOTIFY_EMAIL?.trim() || "contacts@digitaleffect.bg";
+const deosUrl = () => process.env.DEOS_HELLO_URL?.trim() || "https://deos.digitaleffect.bg/api/hello";
 
 // Лек rate limit — 10 заявки / 10 мин на IP (per процес; стига за форма)
 const hits = new Map<string, number[]>();
@@ -59,6 +60,7 @@ export async function POST(req: Request) {
 		const p = profile(answers, behaviour);
 		const lead: Lead = { ...answers, contactName, phone, email, lang, behaviour, meta };
 
+		console.log(`[hello] ${p.play.key}/${p.priority.key} → mail:${process.env.RESEND_API_KEY ? notifyTo() : "OFF (няма RESEND_API_KEY)"} · deos:${deosUrl()}`);
 		const jobs: Promise<unknown>[] = [];
 		if (process.env.RESEND_API_KEY) jobs.push(sendMail(lead, p));
 		jobs.push(forwardToDeos(lead, p));
@@ -120,7 +122,7 @@ async function sendMail(s: Lead, p: Profile) {
 	const text = summary(s, p);
 	const { error } = await resend.emails.send({
 		from: FROM,
-		to: NOTIFY_TO,
+		to: notifyTo(),
 		replyTo: s.email || undefined,
 		subject: `Запитване от сайта — ${s_(s.name) || s.contactName} (${p.play.label})`,
 		text,
@@ -134,7 +136,7 @@ async function forwardToDeos(s: Lead, p: Profile) {
 	const ctrl = new AbortController();
 	const t = setTimeout(() => ctrl.abort(), 8000);
 	try {
-		const r = await fetch(DEOS_URL, {
+		const r = await fetch(deosUrl(), {
 			method: "POST",
 			headers: { "Content-Type": "application/json", Origin: "https://digitaleffect.bg" },
 			// challenge = cost за съвместимост със старата схема; score/profile — за новата

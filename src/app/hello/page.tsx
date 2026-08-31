@@ -137,10 +137,13 @@ function Ring({ score }: { score: number }) {
 /* ── Обвивка ──────────────────────────────────────────────────────────── */
 function Shell({ children, pct, lang, setLang, topRef }: { children: React.ReactNode; pct: number; lang: Lang; setLang: (l: Lang) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
 	return (
-		<main className="min-h-screen bg-dark-obsidian text-gray-100 overflow-x-hidden">
+		<main className="min-h-screen bg-dark-obsidian text-gray-100">
 			<div ref={topRef} className="relative w-full max-w-2xl mx-auto px-4 py-8 sm:py-14">
-				<div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[70px] opacity-60" style={{ background: "radial-gradient(circle, rgba(242,101,34,.16) 0%, transparent 65%)" }} />
-				<div className="pointer-events-none absolute -bottom-24 -right-24 w-[420px] h-[420px] rounded-full blur-[70px] opacity-60" style={{ background: "radial-gradient(circle, rgba(245,156,26,.12) 0%, transparent 65%)" }} />
+				{/* декоративни глоу-ове — в clip-нат слой, за да не създават втори скрол */}
+				<div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+					<div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[70px] opacity-60" style={{ background: "radial-gradient(circle, rgba(242,101,34,.16) 0%, transparent 65%)" }} />
+					<div className="absolute -bottom-24 -right-24 w-[420px] h-[420px] rounded-full blur-[70px] opacity-60" style={{ background: "radial-gradient(circle, rgba(245,156,26,.12) 0%, transparent 65%)" }} />
+				</div>
 
 				<div className="relative flex items-center justify-between mb-5">
 					<Link href="/" className="font-display font-black tracking-tight text-lg">Digital<span className="text-brand-orange-l">Effect</span></Link>
