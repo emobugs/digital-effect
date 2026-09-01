@@ -47,6 +47,16 @@ const T = {
 } as const;
 
 const cx = (...a: (string | false | undefined)[]) => a.filter(Boolean).join(" ");
+
+// Подсказки по канал — името стига, линк не е нужен
+const LINK_PH: Record<string, { bg: string; en: string }> = {
+	"Сайт": { bg: "адрес или само име — напр. example.bg", en: "address or just a name — e.g. example.com" },
+	"Facebook страница": { bg: "името на страницата — както се вижда във Facebook", en: "the page name — as it appears on Facebook" },
+	"Instagram": { bg: "@профил или име", en: "@handle or name" },
+	"TikTok": { bg: "@профил или име", en: "@handle or name" },
+	"Google Бизнес профил": { bg: "името на обекта — както е в Google Maps", en: "the listing name — as it is on Google Maps" },
+	"Онлайн магазин": { bg: "адрес или име на магазина", en: "store address or name" },
+};
 const visible = (f: Field, a: Answers) => (typeof f.showIf === "function" ? f.showIf(a) : true);
 const filled = (v: unknown) => (Array.isArray(v) ? v.length > 0 : String(v ?? "").trim().length > 0);
 
@@ -66,7 +76,7 @@ const OPT = "flex items-center gap-3 text-left rounded-xl border px-4 py-3 text-
 const OPT_ON = "border-brand-orange-l/50 bg-brand-orange-l/[0.07] text-gray-100";
 const OPT_OFF = "border-white/10 bg-black/30 text-gray-300 hover:border-white/20";
 
-type Val = string | string[] | undefined;
+type Val = string | string[] | Record<string, string> | undefined;
 function FieldInput({ f, value, lang, onChange, t }: { f: Field; value: Val; lang: Lang; onChange: (v: Val) => void; t: (typeof T)[Lang] }) {
 	const labelOf = (i: number) => (lang === "en" && f.options_en ? f.options_en[i] : f.options![i]);
 	const ph = lang === "en" ? f.placeholder_en ?? f.placeholder : f.placeholder;
@@ -208,15 +218,17 @@ export default function HelloPage() {
 		setSending(true); setErr("");
 		const now = Date.now();
 		bh.current.perStep[current.id] = (bh.current.perStep[current.id] || 0) + (now - bh.current.stepT0);
+		const links = Object.fromEntries(Object.entries((a.presenceLinks || {}) as Record<string, string>).filter(([, v]) => v.trim()));
+		const presenceUrl = Object.entries(links).map(([k, v]) => `${k}: ${v.trim()}`).join(" · ");
 		const behaviour = {
 			totalMs: now - bh.current.t0, perStepMs: bh.current.perStep, revisits: bh.current.revisits,
 			textLen: (String(a.goal || "") + String(a.cost || "") + String(a.workedWhat || "")).length,
-			optionalFilled: ["presenceUrl", "phone", "email", "workedWhat"].filter((k) => filled(a[k])).length,
+			optionalFilled: ["phone", "email", "workedWhat"].filter((k) => filled(a[k])).length + Object.keys(links).length,
 		};
 		try {
 			const r = await fetch("/api/hello", {
 				method: "POST", headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ ...a, lang, behaviour, website: hpRef.current?.value || "", meta: { ua: navigator.userAgent, ref: document.referrer, ts: new Date().toISOString() } }),
+				body: JSON.stringify({ ...a, presenceLinks: links, presenceUrl, lang, behaviour, website: hpRef.current?.value || "", meta: { ua: navigator.userAgent, ref: document.referrer, ts: new Date().toISOString() } }),
 			});
 			if (!r.ok) throw new Error();
 			setDone(publicReport(a)); scrollTop();
@@ -295,6 +307,24 @@ export default function HelloPage() {
 								{lang === "en" ? f.label_en ?? f.label : f.label}{f.required && <span className="ml-1 text-brand-orange-l">*</span>}
 							</label>
 							<FieldInput f={f} value={a[f.id] as Val} lang={lang} onChange={(v) => set(f.id, v)} t={t} />
+							{f.id === "presence" && (a.presence as string[] | undefined)?.filter((o) => LINK_PH[o]).map((o) => {
+								const links = (a.presenceLinks || {}) as Record<string, string>;
+								const i = f.options!.indexOf(o);
+								return (
+									<div key={o} className="mt-2 flex items-center gap-2">
+										<span className="flex-shrink-0 w-28 sm:w-36 text-xs text-gray-500 text-right leading-tight">
+											{lang === "en" && f.options_en ? f.options_en[i] : o}
+										</span>
+										<input
+											type="text"
+											value={links[o] || ""}
+											onChange={(e) => set("presenceLinks", { ...links, [o]: e.target.value })}
+											placeholder={LINK_PH[o][lang]}
+											className={cx(INPUT, "py-2 text-sm")}
+										/>
+									</div>
+								);
+							})}
 							{bad && <div className="text-xs mt-1.5 text-red-400">{t.reqField}</div>}
 						</div>
 					);

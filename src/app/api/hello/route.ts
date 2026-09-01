@@ -53,6 +53,16 @@ export async function POST(req: Request) {
 			const v = body[k];
 			answers[k] = Array.isArray(v) ? v.map((x) => str(x, 80)).slice(0, 10) : str(v);
 		}
+		// Имена/линкове по канал (Стъпка 2) — само стрингове, ограничени
+		const rawLinks = typeof body.presenceLinks === "object" && body.presenceLinks ? (body.presenceLinks as Record<string, unknown>) : {};
+		const presenceLinks: Record<string, string> = {};
+		for (const [k, v] of Object.entries(rawLinks).slice(0, 10)) {
+			const val = str(v, 120);
+			if (val) presenceLinks[str(k, 40)] = val;
+		}
+		answers.presenceLinks = presenceLinks;
+		if (!answers.presenceUrl) answers.presenceUrl = Object.entries(presenceLinks).map(([k, v]) => `${k}: ${v}`).join(" · ");
+
 		const behaviour: Behaviour = typeof body.behaviour === "object" && body.behaviour ? (body.behaviour as Behaviour) : {};
 		const lang = body.lang === "en" ? "en" : "bg";
 		const meta = { ...(typeof body.meta === "object" && body.meta ? body.meta : {}), ip };
@@ -61,11 +71,14 @@ export async function POST(req: Request) {
 		const lead: Lead = { ...answers, contactName, phone, email, lang, behaviour, meta };
 
 		console.log(`[hello] ${p.play.key}/${p.priority.key} → mail:${process.env.RESEND_API_KEY ? notifyTo() : "OFF (няма RESEND_API_KEY)"} · deos:${deosUrl()}`);
-		const jobs: Promise<unknown>[] = [];
-		if (process.env.RESEND_API_KEY) jobs.push(sendMail(lead, p));
-		jobs.push(forwardToDeos(lead, p));
-		const results = await Promise.allSettled(jobs);
-		results.forEach((r, i) => { if (r.status === "rejected") console.error(`[hello] job ${i}:`, r.reason); });
+
+		// 1) de-os първо (панел + Telegram), с един повторен опит — при рестарт на VPS-а
+		//    първата заявка често пада. 2) Имейлът носи резултата, за да се вижда без логове.
+		const deos = await forwardToDeos(lead, p);
+		if (!deos.ok) console.error("[hello] de-os:", deos.error);
+		if (process.env.RESEND_API_KEY) {
+			try { await sendMail(lead, p, deos); } catch (e) { console.error("[hello] mail:", e); }
+		}
 
 		return NextResponse.json({ ok: true });
 	} catch (e) {
@@ -101,7 +114,8 @@ function summary(s: Lead, p: Profile) {
 		``,
 		`Бранш: ${s_(s.industry) || "—"}${s_(s.industryOther) ? ` (${s_(s.industryOther)})` : ""}`,
 		`Възраст: ${s_(s.age) || "—"} · Екип: ${s_(s.team) || "—"}`,
-		`Онлайн: ${(Array.isArray(s.presence) ? s.presence : []).join(", ") || "—"}${s_(s.presenceUrl) ? ` · ${s_(s.presenceUrl)}` : ""}`,
+		`Онлайн: ${(Array.isArray(s.presence) ? s.presence : []).join(", ") || "—"}`,
+		...Object.entries((s.presenceLinks as Record<string, string>) || {}).map(([k, v]) => `  · ${k}: ${v}`),
 		`Намират ги: ${s_(s.discovery) || "—"} · От интернет: ${s_(s.leadsNow) || "—"}`,
 		`Агенция: ${s_(s.worked) || "—"}${s_(s.workedWhat) ? ` → ${s_(s.workedWhat)}` : ""}`,
 		`Реклама досега: ${s_(s.spend) || "—"}${s_(s.spendResult) ? ` → ${s_(s.spendResult)}` : ""}`,
@@ -117,9 +131,13 @@ function summary(s: Lead, p: Profile) {
 	].filter((l) => l !== "").join("\n");
 }
 
-async function sendMail(s: Lead, p: Profile) {
+type Forward = { ok: boolean; id?: number; error?: string };
+
+async function sendMail(s: Lead, p: Profile, deos: Forward) {
 	const resend = new Resend(process.env.RESEND_API_KEY);
-	const text = summary(s, p);
+	const text = summary(s, p) + "\n" + (deos.ok
+		? `de-os: ✓ записан${deos.id ? ` (#${deos.id})` : ""} — виж панела`
+		: `de-os: ⚠ НЕ Е ЗАПИСАН (${deos.error}) — попълването е само в този имейл`);
 	const { error } = await resend.emails.send({
 		from: FROM,
 		to: notifyTo(),
@@ -131,20 +149,32 @@ async function sendMail(s: Lead, p: Profile) {
 	if (error) throw new Error(`Resend: ${JSON.stringify(error)}`);
 }
 
-/* ── препращане към de-os (панел /hello + Telegram) ────────────────────── */
-async function forwardToDeos(s: Lead, p: Profile) {
-	const ctrl = new AbortController();
-	const t = setTimeout(() => ctrl.abort(), 8000);
-	try {
-		const r = await fetch(deosUrl(), {
-			method: "POST",
-			headers: { "Content-Type": "application/json", Origin: "https://digitaleffect.bg" },
-			// challenge = cost за съвместимост със старата схема; score/profile — за новата
-			body: JSON.stringify({ ...s, challenge: s.cost, score: p.score, profile: p, website: "" }),
-			signal: ctrl.signal,
-		});
-		if (!r.ok) throw new Error(`de-os ${r.status}`);
-	} finally {
-		clearTimeout(t);
+/* ── препращане към de-os (панел /hello + Telegram) — 2 опита ─────────────── */
+async function forwardToDeos(s: Lead, p: Profile): Promise<Forward> {
+	// challenge = cost за съвместимост със старата схема; score/profile — за новата
+	const payload = JSON.stringify({ ...s, challenge: s.cost, score: p.score, profile: p, website: "" });
+	let lastErr = "";
+	for (let attempt = 1; attempt <= 2; attempt++) {
+		const ctrl = new AbortController();
+		const t = setTimeout(() => ctrl.abort(), 10000);
+		try {
+			const r = await fetch(deosUrl(), {
+				method: "POST",
+				headers: { "Content-Type": "application/json", Origin: "https://digitaleffect.bg" },
+				body: payload,
+				signal: ctrl.signal,
+			});
+			if (r.ok) {
+				const j = (await r.json().catch(() => ({}))) as { id?: number };
+				return { ok: true, id: j.id };
+			}
+			lastErr = `HTTP ${r.status}${r.status >= 500 ? " (сървърна грешка в de-os — виж pm2 logs)" : ""}`;
+		} catch (e) {
+			lastErr = e instanceof Error ? (e.name === "AbortError" ? "timeout 10s" : e.message) : String(e);
+		} finally {
+			clearTimeout(t);
+		}
+		if (attempt === 1) await new Promise((res) => setTimeout(res, 3000));
 	}
+	return { ok: false, error: lastErr };
 }

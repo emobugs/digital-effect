@@ -79,7 +79,6 @@ export const STEPS: Step[] = [
 			  options: ["Сайт", "Facebook страница", "Instagram", "TikTok", "Google Бизнес профил", "Онлайн магазин", "Нищо от изброените"],
 			  options_en: ["Website", "Facebook page", "Instagram", "TikTok", "Google Business Profile", "Online store", "None of these"],
 			  signal: "CAPACITY + BELIEF: вече инвестирано усилие." },
-			{ id: "presenceUrl", type: "text", label: "Линк, ако има", label_en: "Link, if any", placeholder: "example.bg или @profile", placeholder_en: "example.bg or @profile" },
 			{ id: "discovery", type: "radio", label: "Как Ви намират клиентите днес?", label_en: "How do customers find you today?", required: true,
 			  options: ["По препоръка", "Google търсене", "Социални мрежи", "Платена реклама", "Минават покрай обекта", "Честно казано — не знам"],
 			  options_en: ["Word of mouth", "Google search", "Social media", "Paid ads", "Walk-ins", "Honestly — I don't know"],
