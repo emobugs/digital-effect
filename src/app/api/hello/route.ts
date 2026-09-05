@@ -11,6 +11,8 @@ const FROM = "Digital Effect <zapitvane@digitaleffect.bg>";
 // Env се чете при всяка заявка (не при import), за да не остане „запечен“ стар адрес
 const notifyTo = () => process.env.HELLO_NOTIFY_EMAIL?.trim() || "contacts@digitaleffect.bg";
 const deosUrl = () => process.env.DEOS_HELLO_URL?.trim() || "https://deos.digitaleffect.bg/api/hello";
+// Споделена тайна със de-os (HELLO_SECRET там). Празна = пращаме без хедър.
+const deosSecret = () => process.env.DEOS_HELLO_SECRET?.trim() || "";
 
 // Лек rate limit — 10 заявки / 10 мин на IP (per процес; стига за форма)
 const hits = new Map<string, number[]>();
@@ -68,7 +70,10 @@ export async function POST(req: Request) {
 		const meta = { ...(typeof body.meta === "object" && body.meta ? body.meta : {}), ip };
 
 		const p = profile(answers, behaviour);
-		const lead: Lead = { ...answers, contactName, phone, email, lang, behaviour, meta };
+		// DE Partners: кодът на партньора (?p= на сайта) — минава към de-os непроменен
+		const rawCode = str(body.partnerCode, 20).toUpperCase();
+		const partnerCode = /^DE-[A-Z0-9]{2,8}-[A-Z0-9]{4}$/.test(rawCode) ? rawCode : "";
+		const lead: Lead = { ...answers, contactName, phone, email, lang, behaviour, meta, partnerCode };
 
 		console.log(`[hello] ${p.play.key}/${p.priority.key} → mail:${process.env.RESEND_API_KEY ? notifyTo() : "OFF (няма RESEND_API_KEY)"} · deos:${deosUrl()}`);
 
@@ -88,7 +93,7 @@ export async function POST(req: Request) {
 }
 
 /* ── имейл с вътрешния профил (само за нас) ────────────────────────────── */
-type Lead = Answers & { contactName: string; phone: string; email: string; lang: string; behaviour: Behaviour; meta: Record<string, unknown> };
+type Lead = Answers & { contactName: string; phone: string; email: string; lang: string; behaviour: Behaviour; meta: Record<string, unknown>; partnerCode: string };
 const s_ = (v: unknown) => (typeof v === "string" ? v : "");
 const bar = (n: number) => "█".repeat(Math.round((n || 0) / 10)).padEnd(10, "░");
 const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -127,6 +132,7 @@ function summary(s: Lead, p: Profile) {
 		``,
 		`Попълвал: ${mins} мин · връщания: ${s.behaviour.revisits ?? "—"} · език: ${s.lang}`,
 		`Контакт: ${s.contactName} · ${s.phone || "—"} · ${s.email || "—"}`,
+		s.partnerCode ? `Партньор: ${s.partnerCode}` : "",
 		`Панел: https://deos.digitaleffect.bg/hello`,
 	].filter((l) => l !== "").join("\n");
 }
@@ -160,7 +166,11 @@ async function forwardToDeos(s: Lead, p: Profile): Promise<Forward> {
 		try {
 			const r = await fetch(deosUrl(), {
 				method: "POST",
-				headers: { "Content-Type": "application/json", Origin: "https://digitaleffect.bg" },
+				headers: {
+					"Content-Type": "application/json",
+					Origin: "https://digitaleffect.bg",
+					...(deosSecret() ? { "X-Hello-Secret": deosSecret() } : {}),
+				},
 				body: payload,
 				signal: ctrl.signal,
 			});
@@ -168,7 +178,10 @@ async function forwardToDeos(s: Lead, p: Profile): Promise<Forward> {
 				const j = (await r.json().catch(() => ({}))) as { id?: number };
 				return { ok: true, id: j.id };
 			}
-			lastErr = `HTTP ${r.status}${r.status >= 500 ? " (сървърна грешка в de-os — виж pm2 logs)" : ""}`;
+			lastErr =
+				r.status === 401
+					? "HTTP 401 (de-os отказа — DEOS_HELLO_SECRET на сайта ≠ HELLO_SECRET в de-os, или de-os е стар билд с getTenant() на POST)"
+					: `HTTP ${r.status}${r.status >= 500 ? " (сървърна грешка в de-os — виж pm2 logs)" : ""}`;
 		} catch (e) {
 			lastErr = e instanceof Error ? (e.name === "AbortError" ? "timeout 10s" : e.message) : String(e);
 		} finally {

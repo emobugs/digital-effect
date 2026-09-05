@@ -100,6 +100,9 @@ export default function Footer() {
 					© {year} Digital Effect. Всички права запазени.
 				</p>
 				<div className="flex items-center gap-4 text-[11px] tracking-[0.5px]">
+					<Link href="/partners" className="text-white/30 hover:text-white/60 transition-colors">
+						Партньорска програма
+					</Link>
 					<Link href="/privacy" className="text-white/30 hover:text-white/60 transition-colors">
 						Политика за поверителност
 					</Link>

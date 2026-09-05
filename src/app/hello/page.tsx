@@ -8,8 +8,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import Link from "next/link";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STEPS, publicReport, type Answers, type Field, type PublicReport } from "@/lib/lead-scoring";
+import { resolvePartnerCode } from "@/lib/partner-ref";
 
 type Lang = "bg" | "en";
 
@@ -28,6 +29,7 @@ const T = {
 		doneSub: "Това е бърза оценка на дигиталното Ви състояние по Вашите отговори. Свързваме се до 24 часа с конкретните стъпки.",
 		badge: "Връзка до 24 часа",
 		noneOpt: "Нищо от изброените",
+		referred: "Препоръчан от",
 	},
 	en: {
 		kicker: "Digital Effect Growth Score",
@@ -43,6 +45,7 @@ const T = {
 		doneSub: "A quick assessment of your digital state based on your answers. We'll be in touch within 24 hours with concrete steps.",
 		badge: "Contact within 24 hours",
 		noneOpt: "None of these",
+		referred: "Referred by",
 	},
 } as const;
 
@@ -185,7 +188,21 @@ export default function HelloPage() {
 	const [sending, setSending] = useState(false);
 	const [err, setErr] = useState("");
 	const [done, setDone] = useState<PublicReport | null>(null);
+	// DE Partners: ?p=DE-… → пази се 90 дни, праща се като partnerCode (отделно
+	// поле; meta.ref е Smart Reach линкът). Бадж само ако кодът е активен.
+	const [partner, setPartner] = useState<{ code: string; name: string | null }>({ code: "", name: null });
 	const t = T[lang];
+
+	useEffect(() => {
+		const code = resolvePartnerCode();
+		if (!code) return;
+		let alive = true;
+		fetch(`/api/partners/check?code=${encodeURIComponent(code)}`)
+			.then((r) => r.json())
+			.then((d: { valid?: boolean; name?: string }) => { if (alive) setPartner({ code, name: d?.valid && d.name ? String(d.name).slice(0, 40) : null }); })
+			.catch(() => { if (alive) setPartner({ code, name: null }); });
+		return () => { alive = false; };
+	}, []);
 
 	const bh = useRef({ t0: 0, stepT0: 0, perStep: {} as Record<string, number>, revisits: 0, maxStep: 0 });
 	const hpRef = useRef<HTMLInputElement>(null);
@@ -228,7 +245,7 @@ export default function HelloPage() {
 		try {
 			const r = await fetch("/api/hello", {
 				method: "POST", headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ ...a, presenceLinks: links, presenceUrl, lang, behaviour, website: hpRef.current?.value || "", meta: { ua: navigator.userAgent, ref: document.referrer, ts: new Date().toISOString() } }),
+				body: JSON.stringify({ ...a, presenceLinks: links, presenceUrl, lang, behaviour, partnerCode: partner.code || undefined, website: hpRef.current?.value || "", meta: { ua: navigator.userAgent, ref: new URLSearchParams(window.location.search).get("ref") || "", referrer: document.referrer, ts: new Date().toISOString() } }),
 			});
 			if (!r.ok) throw new Error();
 			setDone(publicReport(a)); scrollTop();
@@ -241,6 +258,11 @@ export default function HelloPage() {
 	if (!started)
 		return (
 			<Shell pct={pct} lang={lang} setLang={setLang} topRef={topRef}>
+				{partner.name && (
+					<div className="inline-flex items-center gap-2 rounded-full border border-brand-orange-l/30 bg-brand-orange-l/[0.08] px-3 py-1 text-xs text-gray-200 mb-4">
+						<span className="w-1.5 h-1.5 rounded-full bg-brand-orange-l" />{t.referred} <span className="font-semibold">{partner.name}</span>
+					</div>
+				)}
 				<div className="text-[11px] font-extrabold tracking-[.18em] uppercase text-brand-orange-l mb-3">{t.kicker}</div>
 				<h1 className="font-display font-black text-3xl sm:text-4xl leading-[1.08] tracking-tight mb-4">{t.title[0]}<span className="bg-brand-grad-text bg-clip-text text-transparent">{t.title[1]}</span></h1>
 				<p className="text-gray-400 text-[15px] leading-relaxed mb-8 max-w-prose">{t.sub}</p>
