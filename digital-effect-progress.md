@@ -11,6 +11,25 @@
 
 ---
 
+## 2026-09-04 — Digital Effect Partners (реферална програма) + `?p=` в Клиентомата
+Имплементирано от Claude (не Codex). Спецификация и одит на сигурността: в de-os `docs/PARTNERS_SPEC.md`, `docs/PARTNERS_SECURITY_AUDIT.md` (копия в Cowork → `digital-effect/Клиентомат/`).
+- **Нови страници:** `src/app/partners/page.tsx` (програма: hero, 3 стъпки, нива 10/12/18 %, проекти 20/15/10 %, калкулатор, форма за регистрация), `partners/terms/page.tsx` (условия — чернова за преглед със счетоводител), `partners/me/page.tsx` (кабинет на партньора), `partners/layout.tsx` (metadata), `partners/program.ts` (КОПИЕ на стойностите от de-os настройките — при промяна там смени и тук), `partners/ui.tsx` (общи атоми).
+- **Нови lib:** `src/lib/partner-ref.ts` (`?p=DE-XXXX-YYYY` → localStorage `de_partner` за 90 дни; **не** `?ref` — той е персоналният линк на Smart Reach `sr-<id>`), `src/lib/deos-proxy.ts` (proxy към de-os със споделената тайна; IP = `x-real-ip` или последният hop на XFF, не първият — клиентът може да си прати XFF).
+- **Нови API route-ове (proxy към de-os `/api/partners/*`):** `api/partners/check` (GET, „Препоръчан от Иван“, кеш 60 с), `api/partners/register` (POST, валидация + honeypot, имейлът е задължителен), `api/partners/me` (POST/PATCH/DELETE — кабинет).
+- **Кабинет = вход само с личен линк** `/partners/me?k=<token>` от имейла; token-ът после е в **httpOnly cookie** `de_partner` (path `/partners`, 30 дни), нищо в localStorage; `?k=` се маха от адреса с `history.replaceState`. Код + телефон служат само за „изпрати ми линка наново“ (еднакъв отговор при успех/провал). Причина: телефонът не е тайна, а кодът е публичен в линка — виж H1 в одита.
+- **`/hello`:** при mount чете `?p=`/localStorage → `GET /api/partners/check` → бадж „Препоръчан от {име}“; в payload-а `partnerCode` като **отделно поле** (не в `meta` — `meta.ref` е Smart Reach). `api/hello/route.ts` валидира кода по regex, пропуска го към de-os и добавя ред „Партньор: …“ в имейла.
+- **Други:** `/privacy` — абзац за партньорските данни + че пазим `?p=` кода в браузъра; Footer — линк „Партньорска програма“; `.env.example` — `DEOS_PARTNERS_URL` (по подразбиране production; тайната е същата `DEOS_HELLO_SECRET`).
+- ✅ `tsc --noEmit` и `eslint src` чисти. Пълен `next build` не е правен в sandbox-а — билдни на машината преди деплой.
+- ⚠️ **Деплой:** `DEOS_HELLO_SECRET` на Hostinger = `HELLO_SECRET` в de-os (`ecosystem.config.cjs`). de-os вече е **fail-closed** в production — без секрет `/api/hello` и `/api/partners/*` връщат 401 (преди приемаха всичко). Cron за начисляването е само на VPS-а (de-os), сайтът няма cron.
+- Ред на пускане: първо de-os (`git pull` → `npm install` (qrcode) → build → `pm2 restart ecosystem.config.cjs --only de-os --update-env`), после сайтът; тест: регистрация на /partners → Telegram → одобри в deos/partners → отвори линка от имейла → /hello?p=<код> → попълни → в /hello панела има ред „Партньор“.
+
+## 2026-09-03 — Клиентомат: `?ref` от URL-а → `meta.ref` (персонален линк от Smart Reach)
+Имплементирано от Claude (Cowork сесия за Smart Reach; контекст в Cowork проекта `claude/smartreach-signal-scoring-plan.md`).
+- `src/app/hello/page.tsx`: преди `meta.ref` беше `document.referrer` (откъде идва посетителят) и персоналният линк не се хващаше. Сега `meta.ref` = `?ref` от URL-а (Smart Reach панелът генерира `?ref=sr-<leadId>` с бутона „Линк за анкетата“), а referrer-ът е в `meta.referrer`.
+- de-os страната: попълване с `meta.ref = sr-…` се закача за лида детерминистично (приоритет линк > телефон > имейл > домейн); отговорите от анкетата бият сигналите; лидът получава бадж „КМ✓“ и статус „Да“.
+- Партньорските кодове са отделно (`?p=`, поле `partnerCode`) — не пипат `meta.ref` (виж записа от 09-04).
+- Замисъл за изпуснати попълвания (401 без `DEOS_HELLO_SECRET`): de-os `scripts/hello-replay.mjs` ги вкарва от имейлите през същия endpoint.
+
 ## 2026-07-24 — Resend fix (LIVE ✅)
 - Формата работи на прод. Основната причина за 502/401: **Hostinger uppercase-ваше API ключа** в env панела → `API key is invalid` (Resend ключът е case-sensitive). Реши се като ключът се пази с правилен case.
 - Next.js 16 Turbopack конфликт: build ползва `next build --webpack`; добавен празен `turbopack: {}` в next.config.ts за да върви и `next dev` чисто. Памет: `--max-old-space-size=1024`.
