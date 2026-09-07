@@ -213,7 +213,7 @@ export default function PartnersClient({ program }: { program: Program }) {
 					<li>· Доведете и партньор — получавате {pct(program.level2Rate)} от клиентите на хората, които Вие сте довели.</li>
 					<li>· Изплащаме до {program.payoutDay}-то число за предходния месец, при натрупани поне {eur(program.minPayout)}.</li>
 					<li>· Банков превод или кредит срещу наша услуга за Вас — с {pct(program.creditBonus)} бонус.</li>
-					<li>· Клиентът трябва да е нов за Digital Effect. Първият код печели.</li>
+					<li>· Клиентът трябва да е нов за Digital Effect.</li>
 				</ul>
 				<p className="text-sm text-gray-500 mt-4">Пълните условия: <Link href="/partners/terms" className="underline text-brand-orange-l">digitaleffect.bg/partners/terms</Link></p>
 			</Card>
