@@ -59,7 +59,6 @@ export default function PartnerCabinetPage() {
 			token = new URLSearchParams(window.location.search).get("k")?.toLowerCase() || "";
 			if (token) window.history.replaceState(null, "", "/partners/me"); // махаме тайната от адреса/историята
 		} catch { /* */ }
-		// eslint-disable-next-line react-hooks/set-state-in-effect -- вход при mount; load сетва state след fetch
 		void load(token);
 	}, []);
 

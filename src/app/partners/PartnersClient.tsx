@@ -110,7 +110,6 @@ export default function PartnersClient({ program }: { program: Program }) {
 		// Партньор води партньор: ?p= на тази страница → parent_code
 		const fromUrl = readPartnerCode();
 		if (fromUrl) storePartnerCode(fromUrl);
-		// eslint-disable-next-line react-hooks/set-state-in-effect -- четем URL/localStorage след mount (SSR няма достъп)
 		setParent(fromUrl ?? getStoredPartnerCode(program.attributionDays));
 	}, [program.attributionDays]);
 
