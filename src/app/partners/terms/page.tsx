@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PROGRAM, pct, eur } from "../program";
+import { pct, eur } from "../program";
+import { loadProgram } from "@/lib/partners-program";
 
 export const metadata: Metadata = {
 	title: "Условия на партньорската програма — Digital Effect",
@@ -8,7 +9,10 @@ export const metadata: Metadata = {
 };
 
 // ⚠ Чернова за преглед от Емил (и счетоводител/юрист) преди публикуване.
-export default function PartnersTermsPage() {
+export const revalidate = 600; // числата идват от de-os (loadProgram), кеш 10 мин
+
+export default async function PartnersTermsPage() {
+	const PROGRAM = await loadProgram();
 	const tiers = [...PROGRAM.tiers].sort((a, b) => a.min - b.min);
 	return (
 		<main className="min-h-screen bg-dark-obsidian text-gray-200">

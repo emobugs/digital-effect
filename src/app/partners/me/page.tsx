@@ -17,7 +17,8 @@ type Cabinet = {
 	tier: { activeClients: number; rate: number; nextTier: { min: number; rate: number; need: number } | null };
 	tiers: { min: number; rate: number }[]; level2_rate: number; min_payout: number; credit_bonus: number;
 	leads: { business_name: string; status: string; source: string; created_at: string }[];
-	deals: { client_name: string; kind: string; status: string; first_paid_at: string; months: number }[];
+	deals: { client_name: string; kind: string; status: string; first_paid_at: string; months: number; monthly_value: number; rate: number; commission: number }[];
+	monthly_estimate: number;
 	accruals: { period: string; kind: string; amount: number; client_name: string | null; paid: boolean }[];
 	payouts: { amount: number; method: string; paid_at: string }[];
 	totals: { earned: number; paid: number; unpaid: number };
@@ -128,8 +129,8 @@ export default function PartnerCabinetPage() {
 					</div>
 					<button type="button" className={BTN_GHOST} onClick={logout}>Излез</button>
 				</div>
-				<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-					{[["Ниво", pct(cab.tier.rate)], ["Активни клиенти", String(cab.tier.activeClients)], ["Начислено", eur(cab.totals.earned)], ["За изплащане", eur(cab.totals.unpaid)]].map(([l, v]) => (
+				<div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-5">
+					{[["Ниво", pct(cab.tier.rate)], ["Активни клиенти", String(cab.tier.activeClients)], ["≈ На месец", eur(cab.monthly_estimate || 0)], ["Начислено", eur(cab.totals.earned)], ["За изплащане", eur(cab.totals.unpaid)]].map(([l, v]) => (
 						<div key={l} className="rounded-xl bg-black/30 border border-white/10 p-3">
 							<div className="text-[11px] uppercase tracking-[.14em] text-gray-500">{l}</div>
 							<div className="font-display font-black text-xl mt-0.5">{v}</div>
@@ -163,12 +164,14 @@ export default function PartnerCabinetPage() {
 					<Kicker>Клиенти ({cab.deals.length})</Kicker>
 					<div className="divide-y divide-white/[.06]">
 						{cab.deals.map((d, i) => (
-							<div key={i} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-								<span className="text-gray-100 truncate">{d.client_name} <span className="text-gray-500">· {d.kind === "project" ? "проект" : `месечен, ${d.months} мес.`}</span></span>
+							<div key={i} className="flex items-center justify-between gap-3 py-2.5 text-sm flex-wrap">
+								<span className="text-gray-100 truncate min-w-0">{d.client_name} <span className="text-gray-500">· {d.kind === "project" ? `проект ${eur(d.monthly_value)}` : `${eur(d.monthly_value)}/мес, ${d.months} мес.`}</span></span>
 								<span className="text-xs text-gray-400 flex-shrink-0">{DEAL[d.status as keyof typeof DEAL] || d.status} · от {dt(d.first_paid_at)}</span>
+								<span className="text-sm font-semibold text-brand-orange-l flex-shrink-0 tabular-nums">{pct(d.rate)} → {eur(d.commission)}{d.kind === "project" ? "" : "/мес"}</span>
 							</div>
 						))}
 					</div>
+					<div className="text-xs text-gray-500 mt-3">Процентът е текущото Ви ниво и се преизчислява всеки месец; при следващ клиент расте за всички сделки.</div>
 				</Card>
 			)}
 

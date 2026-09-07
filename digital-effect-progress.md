@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-09-07 — Partners: параметрите на програмата идват от de-os (без второ копие)
+- Проблем: `partners/program.ts` беше статично копие на настройките (10/12/18 %, проекти, 12 мес., 50 €…) — смяна в de-os панела променяше начисленията, но не и това, което страницата обещава.
+- **de-os:** нов `GET /api/partners/program` (само числата от настройките, X-Hello-Secret + rate limit, като `/check`).
+- **Сайт:** `src/lib/partners-program.ts` → `loadProgram()` (сървърно, кеш 10 мин през fetch revalidate + памет; при грешка/timeout → `PROGRAM` от `program.ts` като fallback, warn в лога). `program.ts` пази само fallback + `Program` тип + `programFromDeos()` (snake_case → camelCase с валидация).
+- `partners/page.tsx` е вече server component (`revalidate = 600`) → подава `program` на новия клиентски `PartnersClient.tsx` (старият page.tsx; всички `PROGRAM.` → `program.`, стъпката „Печелите N месеца“ и калкулаторът също). `terms/page.tsx` — async, чете `loadProgram()`. `layout.tsx` — `generateMetadata` с „до {макс. %}“ и месеците от de-os.
+- Промяна в панела → сайтът я показва до 10 мин, без rebuild. `program.ts` да се синхронизира с `DEFAULT_SETTINGS` само като резерва.
+- Не е пипано: `partner-ref.ts` (90 дни за localStorage кода) — клиентски, остава константа.
+- Деплой: първо de-os (git pull → build → `pm2 restart ecosystem.config.cjs --only de-os --update-env`), после сайтът (tsc/eslint/build на машината — sandbox-ът провери типовете само със stub-ове).
+
+## 2026-09-06 — Partners: суми в кабинета
+- `/partners/me`: сделките показват сума (месечна/проект), текущ процент и комисионна (`monthly_value`, `rate`, `commission` от de-os `partnerCabinet`), плюс плочка „≈ На месец“ (`monthly_estimate`). Преди се виждаха само в имейла при нова сделка.
+- de-os панел: при „Добави сделка“ — избор на съществуващ лид, „+ Нов лид“ (създава лида и го връзва) или без лид.
+
 ## 2026-09-04 — Digital Effect Partners (реферална програма) + `?p=` в Клиентомата
 Имплементирано от Claude (не Codex). Спецификация и одит на сигурността: в de-os `docs/PARTNERS_SPEC.md`, `docs/PARTNERS_SECURITY_AUDIT.md` (копия в Cowork → `digital-effect/Клиентомат/`).
 - **Нови страници:** `src/app/partners/page.tsx` (програма: hero, 3 стъпки, нива 10/12/18 %, проекти 20/15/10 %, калкулатор, форма за регистрация), `partners/terms/page.tsx` (условия — чернова за преглед със счетоводител), `partners/me/page.tsx` (кабинет на партньора), `partners/layout.tsx` (metadata), `partners/program.ts` (КОПИЕ на стойностите от de-os настройките — при промяна там смени и тук), `partners/ui.tsx` (общи атоми).
@@ -22,13 +35,6 @@
 - ✅ `tsc --noEmit` и `eslint src` чисти. Пълен `next build` не е правен в sandbox-а — билдни на машината преди деплой.
 - ⚠️ **Деплой:** `DEOS_HELLO_SECRET` на Hostinger = `HELLO_SECRET` в de-os (`ecosystem.config.cjs`). de-os вече е **fail-closed** в production — без секрет `/api/hello` и `/api/partners/*` връщат 401 (преди приемаха всичко). Cron за начисляването е само на VPS-а (de-os), сайтът няма cron.
 - Ред на пускане: първо de-os (`git pull` → `npm install` (qrcode) → build → `pm2 restart ecosystem.config.cjs --only de-os --update-env`), после сайтът; тест: регистрация на /partners → Telegram → одобри в deos/partners → отвори линка от имейла → /hello?p=<код> → попълни → в /hello панела има ред „Партньор“.
-
-## 2026-09-03 — Клиентомат: `?ref` от URL-а → `meta.ref` (персонален линк от Smart Reach)
-Имплементирано от Claude (Cowork сесия за Smart Reach; контекст в Cowork проекта `claude/smartreach-signal-scoring-plan.md`).
-- `src/app/hello/page.tsx`: преди `meta.ref` беше `document.referrer` (откъде идва посетителят) и персоналният линк не се хващаше. Сега `meta.ref` = `?ref` от URL-а (Smart Reach панелът генерира `?ref=sr-<leadId>` с бутона „Линк за анкетата“), а referrer-ът е в `meta.referrer`.
-- de-os страната: попълване с `meta.ref = sr-…` се закача за лида детерминистично (приоритет линк > телефон > имейл > домейн); отговорите от анкетата бият сигналите; лидът получава бадж „КМ✓“ и статус „Да“.
-- Партньорските кодове са отделно (`?p=`, поле `partnerCode`) — не пипат `meta.ref` (виж записа от 09-04).
-- Замисъл за изпуснати попълвания (401 без `DEOS_HELLO_SECRET`): de-os `scripts/hello-replay.mjs` ги вкарва от имейлите през същия endpoint.
 
 ## 2026-07-24 — Resend fix (LIVE ✅)
 - Формата работи на прод. Основната причина за 502/401: **Hostinger uppercase-ваше API ключа** в env панела → `API key is invalid` (Resend ключът е case-sensitive). Реши се като ключът се пази с правилен case.
