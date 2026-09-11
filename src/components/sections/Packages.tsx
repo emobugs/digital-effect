@@ -5,86 +5,15 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Check, ArrowRight, Zap } from "lucide-react";
+import { fallbackCatalog, toPackageCards, type PackageCard } from "@/lib/services";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const PACKAGES = [
-	{
-		name: "Социални Мрежи",
-		tagline: "Управление на профили",
-		price: "180",
-		priceLabel: "/ месец",
-		badge: null,
-		gradient: "from-[#c0300a] via-[#e8450a] to-[#f59c1a]",
-		description:
-			"Стратегическо управление на Facebook, Instagram и TikTok. Съдържание, копирайтинг, дизайн и community management — ти се фокусираш върху бизнеса.",
-		features: [
-			"Facebook + Instagram (или TikTok)",
-			"12–16 публикации / месец",
-			"Копирайтинг + графичен дизайн",
-			"Community management",
-			"Месечна стратегия и отчет",
-			"Reels / кратки видеа",
-		],
-	},
-	{
-		name: "Реклама",
-		tagline: "Meta Ads / Google Ads",
-		price: "80",
-		priceLabel: "/ месец + % от бюджет",
-		badge: null,
-		gradient: "from-[#e8450a] via-[#f26522] to-[#f59c1a]",
-		description:
-			"Платени кампании, които носят реални резултати. Таргетиране, A/B тестове, ремаркетинг и оптимизация за максимална възвращаемост.",
-		features: [
-			"Meta Ads или Google Ads",
-			"Setup и структура на кампании",
-			"Таргетиране и аудитории",
-			"A/B тестване на реклами",
-			"Ремаркетинг системи",
-			"Двуседмичен отчет с KPI",
-		],
-	},
-	{
-		name: "Уеб",
-		tagline: "Дизайн & Разработка",
-		price: "400",
-		priceLabel: " / поддръжка от €80",
-		badge: "−50% · Остават 4/5",
-		gradient: "from-[#c0300a] via-[#e8450a] to-[#f26522]",
-		description:
-			"Модерни уебсайтове и landing pages, оптимизирани за конверсия. От дизайн до деплой — и поддръжка след това ако е нужна.",
-		features: [
-			"Custom дизайн и разработка",
-			"Landing page или multi-page сайт",
-			"Мобилна оптимизация",
-			"SEO основи",
-			"Интеграция с форми и инструменти",
-			"Поддръжка от €80 / месец",
-		],
-	},
-	{
-		name: "Автоматизация",
-		tagline: "Самостоятелна услуга",
-		price: null,
-		priceLabel: "По запитване",
-		badge: "Ново",
-		gradient: "from-[#0f0f1a] via-[#1a0a2e] to-[#2d1060]",
-		description:
-			"Само автоматизацията — без SMM абонамент. Чатботове, AI агенти, email sequences и workflow автоматизация за бизнеси, които искат да работят по-умно.",
-		features: [
-			"AI чатбот за сайт / Messenger",
-			"Автоматични email sequences",
-			"CRM setup и интеграция",
-			"Lead capture автоматизация",
-			"Workflow автоматизация (n8n / Make)",
-			"Месечна поддръжка и оптимизация",
-		],
-	},
-];
+// Картите идват от ценоразписа (de-os → src/lib/services.ts). Няма цифри тук.
+type Pkg = PackageCard;
 
-function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
-	const isAuto = pkg.name === "Автоматизация";
+function MobileCard({ pkg }: { pkg: Pkg }) {
+	const isAuto = pkg.accent === "violet";
 	const ref = useRef<HTMLDivElement>(null);
 	const isDiscount = pkg.badge?.includes("−");
 
@@ -170,7 +99,7 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 					{pkg.price ? (
 						<>
 							<div className="font-display font-black text-white leading-none text-[12px] w-full">
-								€{pkg.price} {pkg.priceLabel}
+								{pkg.pricePrefix ? `${pkg.pricePrefix} ` : ""}€{pkg.price} {pkg.priceLabel}
 							</div>
 						</>
 					) : (
@@ -215,7 +144,7 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 					</a>
 					<p className="text-[10px] text-white/25 text-center mt-3">
 						{pkg.price
-							? "Мин. 3 месеца · Без скрити такси"
+							? pkg.monthly ? "Мин. 3 месеца · Без скрити такси" : "Еднократно · Без скрити такси"
 							: "Безплатна консултация · Без ангажимент"}
 					</p>
 				</div>
@@ -224,9 +153,9 @@ function MobileCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	);
 }
 
-function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
+function FlipCard({ pkg }: { pkg: Pkg }) {
 	const [flipped, setFlipped] = useState(false);
-	const isAuto = pkg.name === "Автоматизация";
+	const isAuto = pkg.accent === "violet";
 	const isDiscount = pkg.badge?.includes("−");
 
 	return (
@@ -282,7 +211,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 							{pkg.price ? (
 								<>
 									<div className="font-display font-bold text-white leading-none text-[12px]">
-										€{pkg.price} {pkg.priceLabel}
+										{pkg.pricePrefix ? `${pkg.pricePrefix} ` : ""}€{pkg.price} {pkg.priceLabel}
 									</div>
 								</>
 							) : (
@@ -375,9 +304,9 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 								{pkg.price ? (
 									<>
 										<span className="font-display font-black text-gradient text-[20px] leading-none">
-											€{pkg.price}
+											{pkg.pricePrefix ? `${pkg.pricePrefix} ` : ""}€{pkg.price}
 										</span>
-										<span className="text-white/40 text-[12px]">/ месец</span>
+										<span className="text-white/40 text-[12px]">{pkg.monthly ? "/ месец" : "еднократно"}</span>
 									</>
 								) : (
 									<span
@@ -401,7 +330,7 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 							</a>
 							<p className="text-[10px] text-white/25 text-center mt-3">
 								{pkg.price
-									? "Мин. 3 месеца · Без скрити такси"
+									? pkg.monthly ? "Мин. 3 месеца · Без скрити такси" : "Еднократно · Без скрити такси"
 									: "Безплатна консултация · Без ангажимент"}
 							</p>
 						</div>
@@ -412,7 +341,8 @@ function FlipCard({ pkg }: { pkg: (typeof PACKAGES)[0] }) {
 	);
 }
 
-export default function Packages() {
+export default function Packages({ packages }: { packages?: PackageCard[] }) {
+	const PACKAGES = packages?.length ? packages : toPackageCards(fallbackCatalog(false));
 	const container = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -462,8 +392,8 @@ export default function Packages() {
 					<span className="text-gradient">Пакет</span>
 				</h2>
 				<p className="text-[15px] text-white/50 max-w-md mx-auto mt-5 leading-relaxed">
-					Три месечни пакета или самостоятелна автоматизация. Рекламният бюджет е отделен
-					от нашата такса.
+					Месечни пакети, сайт или самостоятелна автоматизация. Рекламният бюджет е отделен от
+					нашата такса. Цените са актуални — същите, които виждате и в офертата си.
 				</p>
 			</div>
 
@@ -471,7 +401,7 @@ export default function Packages() {
 			<div className="max-w-7xl mx-auto hidden md:block">
 				<div className="grid grid-cols-4 gap-6 mb-6">
 					{PACKAGES.map((pkg) => (
-						<FlipCard key={pkg.name} pkg={pkg} />
+						<FlipCard key={pkg.id} pkg={pkg} />
 					))}
 				</div>
 			</div>
@@ -479,7 +409,7 @@ export default function Packages() {
 			{/* MOBILE — статични карти */}
 			<div className="max-w-lg mx-auto flex flex-col gap-6 md:hidden">
 				{PACKAGES.map((pkg) => (
-					<MobileCard key={pkg.name} pkg={pkg} />
+					<MobileCard key={pkg.id} pkg={pkg} />
 				))}
 			</div>
 

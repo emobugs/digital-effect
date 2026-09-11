@@ -1,60 +1,12 @@
-"use client";
+// Начална страница — сървърна обвивка: дърпа ценоразписа от de-os (ISR 5 мин,
+// fallback в src/data) и го подава на клиентската част. Цените на сайта и в
+// офертите са едни и същи — идват от едно място.
+import HomeClient from "./HomeClient";
+import { getCatalog, toPackageCards } from "@/lib/services";
 
-import Navbar from "@/components/layout/Navbar";
-import Hero from "@/components/sections/Hero";
-import Marquee from "@/components/sections/Marquee";
-import Problem from "@/components/sections/Problem";
-import Services from "@/components/sections/Services";
-import Stats from "@/components/sections/Stats";
-import Packages from "@/components/sections/Packages";
-import Extras from "@/components/sections/Extras";
-import Process from "@/components/sections/Process";
-import Cta from "@/components/sections/Cta";
-import { ReactLenis, LenisRef } from "lenis/react";
-import gsap from "gsap";
-import { useEffect, useRef } from "react";
-import Projects from "@/components/sections/Projects";
-import Footer from "@/components/sections/Footer";
+export const revalidate = 300;
 
-export default function Home() {
-	const lenisRef = useRef<LenisRef>(null);
-
-	useEffect(() => {
-		function update(time: number) {
-			lenisRef.current?.lenis?.raf(time * 1000);
-		}
-
-		gsap.ticker.add(update);
-
-		return () => gsap.ticker.remove(update);
-	}, []);
-	return (
-		<>
-			<Navbar />
-			<ReactLenis
-				root
-				options={{
-					autoRaf: false,
-					lerp: 0.15, // Колкото по-малко, толкова по-плавно (0.05 - 0.1 е стандарт)
-					duration: 1.5,
-					smoothWheel: true,
-				}}
-				ref={lenisRef}
-			>
-				<main>
-					<Hero />
-					<Marquee />
-					<Problem />
-					<Services />
-					<Stats />
-					<Packages />
-					<Extras />
-					<Process />
-					<Projects />
-					<Cta />
-					<Footer />
-				</main>
-			</ReactLenis>
-		</>
-	);
+export default async function Home() {
+	const cat = await getCatalog(false);
+	return <HomeClient packages={toPackageCards(cat)} />;
 }

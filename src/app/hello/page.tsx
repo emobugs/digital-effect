@@ -9,8 +9,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { STEPS, publicReport, type Answers, type Field, type PublicReport } from "@/lib/lead-scoring";
+import { STEPS, publicReport, type Answers, type Field, type PublicReport, type Step } from "@/lib/lead-scoring";
 import { resolvePartnerCode } from "@/lib/partner-ref";
+import { fallbackCatalog, type PublicCatalog } from "@/lib/services";
 
 type Lang = "bg" | "en";
 
@@ -18,7 +19,7 @@ const T = {
 	bg: {
 		kicker: "Digital Effect Growth Score",
 		title: ["Къде губите ", "клиенти онлайн?"],
-		sub: "Пет стъпки, около четири минути. Накрая получавате оценка на дигиталното си състояние, изведена от Вашите отговори. После се свързваме с конкретни стъпки — не с общи приказки.",
+		sub: "Шест стъпки, около четири минути. Накрая получавате оценка на дигиталното си състояние, изведена от Вашите отговори. После се свързваме с конкретни стъпки — не с общи приказки.",
 		start: "Започни", step: "Стъпка", of: "от", next: "Продължи", back: "Назад",
 		finish: "Виж анализа", sending: "Изпращаме…", choose: "Изберете…",
 		reqField: "Това поле е нужно, за да е точен анализът.",
@@ -30,11 +31,13 @@ const T = {
 		badge: "Връзка до 24 часа",
 		noneOpt: "Нищо от изброените",
 		referred: "Препоръчан от",
+		svcTitle: "Какво търсите", svcLead: "Кое от това би било най-полезно за Вас сега?",
+		svcLabel: "Изберете едно или повече", svcAdvise: "Не знам — посъветвайте ме",
 	},
 	en: {
 		kicker: "Digital Effect Growth Score",
 		title: ["Where are you ", "losing customers online?"],
-		sub: "Five steps, about four minutes. At the end you get a score of your digital state, derived from your own answers. Then we get in touch with concrete steps — not generic talk.",
+		sub: "Six steps, about four minutes. At the end you get a score of your digital state, derived from your own answers. Then we get in touch with concrete steps — not generic talk.",
 		start: "Start", step: "Step", of: "of", next: "Continue", back: "Back",
 		finish: "See the analysis", sending: "Sending…", choose: "Choose…",
 		reqField: "This field is needed for an accurate analysis.",
@@ -46,6 +49,8 @@ const T = {
 		badge: "Contact within 24 hours",
 		noneOpt: "None of these",
 		referred: "Referred by",
+		svcTitle: "What you're looking for", svcLead: "Which of these would help you most right now?",
+		svcLabel: "Pick one or more", svcAdvise: "Not sure — advise me",
 	},
 } as const;
 
@@ -191,7 +196,31 @@ export default function HelloPage() {
 	// DE Partners: ?p=DE-… → пази се 90 дни, праща се като partnerCode (отделно
 	// поле; meta.ref е Smart Reach линкът). Бадж само ако кодът е активен.
 	const [partner, setPartner] = useState<{ code: string; name: string | null }>({ code: "", name: null });
+	// Ценоразписът (de-os → /api/services) — за стъпката „Какво търсите“. Fallback е вграден.
+	const [catalog, setCatalog] = useState<PublicCatalog>(() => fallbackCatalog(true));
 	const t = T[lang];
+
+	useEffect(() => {
+		let alive = true;
+		fetch("/api/services?for=hello")
+			.then((r) => r.json())
+			.then((c: PublicCatalog) => { if (alive && Array.isArray(c?.services) && c.services.length) setCatalog(c); })
+			.catch(() => { /* остава fallback-ът */ });
+		return () => { alive = false; };
+	}, []);
+
+	// Стъпка „Какво търсите“ — преди последната (решение + контакт), за да остане
+	// бюджетът последният въпрос. Стойностите са имената на услугите; в submit()
+	// се превеждат до id-та от каталога.
+	const steps = useMemo<Step[]>(() => {
+		const names = [...catalog.services].sort((a, b) => a.sort - b.sort).map((x) => x.name);
+		const svc: Step = {
+			id: "services", title: T.bg.svcTitle, title_en: T.en.svcTitle, lead: T.bg.svcLead, lead_en: T.en.svcLead,
+			fields: [{ id: "servicesPick", type: "checks", label: T.bg.svcLabel, label_en: T.en.svcLabel, required: true,
+				options: [...names, T.bg.svcAdvise], options_en: [...names, T.en.svcAdvise] }],
+		};
+		return [...STEPS.slice(0, -1), svc, STEPS[STEPS.length - 1]];
+	}, [catalog]);
 
 	useEffect(() => {
 		const code = resolvePartnerCode();
@@ -209,10 +238,10 @@ export default function HelloPage() {
 	const topRef = useRef<HTMLDivElement>(null);
 
 	const set = useCallback((id: string, v: Val) => setA((p) => ({ ...p, [id]: v })), []);
-	const current = STEPS[step];
+	const current = steps[step];
 	const fields = useMemo(() => current.fields.filter((f) => visible(f, a)), [current, a]);
 	const missing = fields.filter((f) => f.required && !filled(a[f.id]));
-	const last = step === STEPS.length - 1;
+	const last = step === steps.length - 1;
 	const contactMissing = last && !filled(a.phone) && !filled(a.email);
 	const scrollTop = () => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -236,6 +265,10 @@ export default function HelloPage() {
 		const now = Date.now();
 		bh.current.perStep[current.id] = (bh.current.perStep[current.id] || 0) + (now - bh.current.stepT0);
 		const links = Object.fromEntries(Object.entries((a.presenceLinks || {}) as Record<string, string>).filter(([, v]) => v.trim()));
+		// избраните услуги → id-та от каталога (+ „посъветвайте ме“ като отделен флаг)
+		const picked = Array.isArray(a.servicesPick) ? (a.servicesPick as string[]) : [];
+		const services = catalog.services.filter((x) => picked.includes(x.name)).map((x) => x.id);
+		const servicesAdvise = picked.includes(T.bg.svcAdvise) || picked.includes(T.en.svcAdvise);
 		const presenceUrl = Object.entries(links).map(([k, v]) => `${k}: ${v.trim()}`).join(" · ");
 		const behaviour = {
 			totalMs: now - bh.current.t0, perStepMs: bh.current.perStep, revisits: bh.current.revisits,
@@ -245,14 +278,14 @@ export default function HelloPage() {
 		try {
 			const r = await fetch("/api/hello", {
 				method: "POST", headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ ...a, presenceLinks: links, presenceUrl, lang, behaviour, partnerCode: partner.code || undefined, website: hpRef.current?.value || "", meta: { ua: navigator.userAgent, ref: new URLSearchParams(window.location.search).get("ref") || "", referrer: document.referrer, ts: new Date().toISOString() } }),
+				body: JSON.stringify({ ...a, services, servicesAdvise, presenceLinks: links, presenceUrl, lang, behaviour, partnerCode: partner.code || undefined, website: hpRef.current?.value || "", meta: { ua: navigator.userAgent, ref: new URLSearchParams(window.location.search).get("ref") || "", referrer: document.referrer, ts: new Date().toISOString() } }),
 			});
 			if (!r.ok) throw new Error();
 			setDone(publicReport(a)); scrollTop();
 		} catch { setErr(t.errSend); } finally { setSending(false); }
 	}
 
-	const pct = !started ? 0 : done ? 100 : Math.round((step / STEPS.length) * 100);
+	const pct = !started ? 0 : done ? 100 : Math.round((step / steps.length) * 100);
 
 	/* — интро — */
 	if (!started)
@@ -316,7 +349,7 @@ export default function HelloPage() {
 	return (
 		<Shell pct={pct} lang={lang} setLang={setLang} topRef={topRef}>
 			<div className="mb-6">
-				<div className="text-[11px] font-extrabold tracking-[.18em] uppercase text-brand-orange-l mb-2">{t.step} {step + 1} {t.of} {STEPS.length} · {lang === "en" ? current.title_en : current.title}</div>
+				<div className="text-[11px] font-extrabold tracking-[.18em] uppercase text-brand-orange-l mb-2">{t.step} {step + 1} {t.of} {steps.length} · {lang === "en" ? current.title_en : current.title}</div>
 				<h2 className="font-display font-black text-xl sm:text-2xl tracking-tight leading-tight">{lang === "en" ? current.lead_en : current.lead}</h2>
 			</div>
 

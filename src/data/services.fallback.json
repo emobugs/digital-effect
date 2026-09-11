@@ -1,0 +1,202 @@
+{
+	"source": "fallback",
+	"fetchedAt": null,
+	"currency": "€",
+	"services": [
+		{
+			"id": "meta_ads",
+			"sort": 10,
+			"name": "Meta реклама",
+			"short": "Facebook + Instagram Ads",
+			"description": "Платени кампании във Facebook и Instagram, насочени към запитвания и продажби — не към харесвания. Таргетиране, криейтиви, ремаркетинг, измерване на всяко запитване.",
+			"kind": "fee_budget",
+			"price": {
+				"from": 100,
+				"pctOfBudget": 15,
+				"monthly": true
+			},
+			"sitePrice": "100",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "/ месец + 15% от бюджета",
+			"badge": null,
+			"siteFeatures": [
+				"Setup и структура на кампании",
+				"Таргетиране и аудитории",
+				"Криейтиви — визии и видео",
+				"Ремаркетинг",
+				"Meta Pixel + събития — цена на запитване",
+				"Седмичен отчет на човешки език"
+			],
+			"siteVisible": true,
+			"helloVisible": true
+		},
+		{
+			"id": "google_ads",
+			"sort": 20,
+			"name": "Google реклама",
+			"short": "Search + Performance Max",
+			"description": "Реклама в Google за хора, които вече търсят вашата услуга — търсене, Maps и Performance Max. Ключови думи, негативни думи, проследяване на конверсии.",
+			"kind": "fee_budget",
+			"price": {
+				"from": 100,
+				"pctOfBudget": 15,
+				"monthly": true
+			},
+			"sitePrice": "100",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "/ месец + 15% от бюджета",
+			"badge": null,
+			"siteFeatures": [
+				"Search + Performance Max",
+				"Ключови и негативни думи",
+				"Проследяване на конверсии",
+				"Google Business профил",
+				"Седмичен отчет"
+			],
+			"siteVisible": false,
+			"helloVisible": true
+		},
+		{
+			"id": "smm",
+			"sort": 30,
+			"name": "Социални мрежи (SMM)",
+			"short": "Управление на профили",
+			"description": "Съдържание, дизайн, копирайтинг и публикуване във Facebook, Instagram и TikTok — синхронизирано с рекламите и промоциите ви.",
+			"kind": "choice",
+			"price": {
+				"from": 100,
+				"monthly": true
+			},
+			"sitePrice": "100",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "/ месец",
+			"badge": null,
+			"siteFeatures": [
+				"Facebook + Instagram (или TikTok)",
+				"8 или 12 публикации / месец",
+				"Копирайтинг + графичен дизайн",
+				"Community management",
+				"Месечна стратегия и отчет",
+				"Reels / кратки видеа"
+			],
+			"options": [
+				{
+					"id": "smm8",
+					"label": "SMM — 8 поста / месец",
+					"price": 100
+				},
+				{
+					"id": "smm12",
+					"label": "SMM — 12 поста / месец",
+					"price": 140
+				}
+			],
+			"siteVisible": true,
+			"helloVisible": true
+		},
+		{
+			"id": "site_support",
+			"sort": 40,
+			"name": "Поддръжка на сайт",
+			"short": "Базова / Стандартна / Разширена",
+			"description": "Наблюдение, бекъпи, обновявания и промени по сайта — на три нива според нуждата.",
+			"kind": "tiers",
+			"price": {
+				"from": 30,
+				"monthly": true
+			},
+			"sitePrice": "30",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "/ месец",
+			"badge": null,
+			"siteFeatures": [],
+			"tiers": [
+				{
+					"label": "Базова",
+					"price": 30
+				},
+				{
+					"label": "Стандартна",
+					"price": 40
+				},
+				{
+					"label": "Разширена",
+					"price": 60
+				}
+			],
+			"siteVisible": false,
+			"helloVisible": true
+		},
+		{
+			"id": "website",
+			"sort": 50,
+			"name": "Уеб сайт",
+			"short": "Дизайн & разработка",
+			"description": "Модерен уебсайт или landing page, оптимизиран за конверсия. От дизайн до деплой — и поддръжка след това, ако е нужна.",
+			"kind": "one_time",
+			"price": {
+				"from": 400,
+				"monthly": false
+			},
+			"sitePrice": "400",
+			"sitePricePrefix": "",
+			"sitePriceLabel": " / поддръжка от €30",
+			"badge": "−50% · Остават 4/5",
+			"siteFeatures": [
+				"Custom дизайн и разработка",
+				"Landing page или multi-page сайт",
+				"Мобилна оптимизация",
+				"SEO основи",
+				"Интеграция с форми и инструменти",
+				"Поддръжка от €30 / месец"
+			],
+			"siteVisible": true,
+			"helloVisible": true
+		},
+		{
+			"id": "chatko",
+			"sort": 60,
+			"name": "Chatko — AI асистент",
+			"short": "AI чат за сайта и Messenger",
+			"description": "AI асистент, който отговаря на клиентите ви 24/7 на сайта и в Messenger, събира запитвания и записва часове — обучен върху вашите услуги и цени.",
+			"kind": "flat",
+			"price": {
+				"from": 150,
+				"monthly": true
+			},
+			"sitePrice": "150",
+			"sitePricePrefix": "",
+			"sitePriceLabel": "/ месец",
+			"badge": null,
+			"siteFeatures": [],
+			"siteVisible": false,
+			"helloVisible": true
+		},
+		{
+			"id": "automation",
+			"sort": 70,
+			"name": "AI автоматизация",
+			"short": "Самостоятелна услуга",
+			"description": "Чатботове, AI агенти, email sequences и workflow автоматизация за бизнеси, които искат да работят по-умно.",
+			"kind": "quote",
+			"price": {
+				"from": null,
+				"monthly": false
+			},
+			"sitePrice": null,
+			"sitePricePrefix": "",
+			"sitePriceLabel": "По запитване",
+			"badge": "Ново",
+			"siteFeatures": [
+				"AI чатбот за сайт / Messenger",
+				"Автоматични email sequences",
+				"CRM setup и интеграция",
+				"Lead capture автоматизация",
+				"Workflow автоматизация (n8n / Make)",
+				"Месечна поддръжка и оптимизация"
+			],
+			"siteVisible": true,
+			"helloVisible": true
+		}
+	]
+}
