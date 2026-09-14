@@ -32,12 +32,13 @@ export interface OfferPackage {
 }
 
 export interface OfferOption { id: string; label: string; desc?: string; price: number; oldPrice?: number }
-export interface OfferChoiceGroup { id: string; title?: string; noneLabel?: string; note?: string; highlight?: boolean; badge?: string; options: OfferOption[] }
+export interface OfferChoiceGroup { id: string; title?: string; noneLabel?: string; note?: string; highlight?: boolean; badge?: string; /** id на опцията, маркирана при отваряне; иначе стартира на „Без“ */ defaultOption?: string; options: OfferOption[] }
 export interface OfferTier { label: string; desc?: string; price: number; oldPrice?: number }
-export interface OfferTierGroup { id: string; title: string; noneLabel?: string; note?: string; highlight?: boolean; badge?: string; tiers: OfferTier[] }
+export interface OfferTierGroup { id: string; title: string; noneLabel?: string; note?: string; highlight?: boolean; badge?: string; /** начална позиция на слайдера: 0 = „Без“, 1 = първото ниво */ defaultIndex?: number; tiers: OfferTier[] }
 export interface OfferCheckbox { id: string; label: string; desc?: string; price: number; oldPrice?: number; defaultOn?: boolean; highlight?: boolean; badge?: string }
 export interface OfferCounter { id: string; label: string; desc?: string; unit: number }
-export interface OfferOneTime { id: string; label: string; desc?: string; price: number; oldPrice?: number; badge?: string }
+/** `optional: true` → чекбокс; влиза в сумата и в договора само когато е отметнат. */
+export interface OfferOneTime { id: string; label: string; desc?: string; price: number; oldPrice?: number; badge?: string; optional?: boolean; defaultOn?: boolean }
 
 export interface OfferData {
 	version?: number;

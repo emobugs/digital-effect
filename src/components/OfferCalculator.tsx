@@ -62,10 +62,12 @@ export default function OfferCalculator({ data, token, accepted = null }: { data
 
 	const [pkgOn, setPkgOn] = useState<Record<string, boolean>>(() => Object.fromEntries(packages.map((p) => [p.id, S ? S.packages?.[p.id]?.on !== false && (!!S.packages?.[p.id] || !p.optional) : p.optional ? !!p.defaultOn : p.defaultOn !== false])));
 	const [budgets, setBudgets] = useState<Record<string, number>>(() => Object.fromEntries(packages.filter((p) => p.budget).map((p) => [p.id, S?.packages?.[p.id]?.budget ?? p.budget!.default])));
-	const [choice, setChoice] = useState<Record<string, string>>(() => Object.fromEntries((o.choiceGroups ?? []).map((g) => [g.id, S?.choices?.[g.id] ?? ""])));
-	const [tier, setTier] = useState<Record<string, number>>(() => Object.fromEntries((o.tierGroups ?? []).map((g) => [g.id, S?.tiers?.[g.id] ?? 0])));
+	const [choice, setChoice] = useState<Record<string, string>>(() => Object.fromEntries((o.choiceGroups ?? []).map((g) => [g.id, S?.choices?.[g.id] ?? g.defaultOption ?? ""])));
+	const [tier, setTier] = useState<Record<string, number>>(() => Object.fromEntries((o.tierGroups ?? []).map((g) => [g.id, S?.tiers?.[g.id] ?? g.defaultIndex ?? 0])));
 	const [checks, setChecks] = useState<Record<string, boolean>>(() => Object.fromEntries((o.checkboxes ?? []).map((c) => [c.id, S ? !!S.checkboxes?.[c.id] : !!c.defaultOn])));
 	const [counts, setCounts] = useState<Record<string, number>>(() => Object.fromEntries((o.counters ?? []).map((c) => [c.id, S?.counters?.[c.id] ?? 0])));
+	// Еднократните без `optional` са част от офертата и не се изключват.
+	const [oneTimeOn, setOneTimeOn] = useState<Record<string, boolean>>(() => Object.fromEntries((o.oneTime ?? []).map((x) => [x.id, !x.optional || (S ? !!S.oneTime?.[x.id] : !!x.defaultOn)])));
 
 	const T = { agency: "Общо към Digital Effect", budget: "Рекламен бюджет (директно към платформите)", grand: "ОБЩА МЕСЕЧНА ИНВЕСТИЦИЯ", oneTime: "Еднократно", ...(o.totalLabels ?? {}) };
 
@@ -88,12 +90,12 @@ export default function OfferCalculator({ data, token, accepted = null }: { data
 	for (const c of o.checkboxes ?? []) if (checks[c.id]) rows.push([c.label, c.price]);
 	for (const c of o.counters ?? []) { const n = counts[c.id] ?? 0; if (n > 0) rows.push([`${c.label} × ${n}`, n * c.unit]); }
 	const agency = rows.reduce((s, r) => s + r[1], 0);
-	const oneTimeSum = (o.oneTime ?? []).reduce((s, x) => s + x.price, 0);
+	const oneTimeSum = (o.oneTime ?? []).reduce((s, x) => (oneTimeOn[x.id] ? s + x.price : s), 0);
 	const hasBudget = packages.some((p) => p.budget && pkgOn[p.id]);
 	// Изборът, който отива в de-os при преглед/приемане (сумите се смятат там)
 	const selection: OfferSelection = {
 		packages: Object.fromEntries(packages.map((p) => [p.id, { on: !!pkgOn[p.id], budget: p.budget ? budgets[p.id] ?? p.budget.default : undefined }])),
-		choices: choice, tiers: tier, checkboxes: checks, counters: counts,
+		choices: choice, tiers: tier, checkboxes: checks, counters: counts, oneTime: oneTimeOn,
 	};
 	const hasAddons = !!((o.choiceGroups?.length) || (o.tierGroups?.length) || (o.checkboxes?.length) || (o.counters?.length));
 
@@ -235,15 +237,23 @@ export default function OfferCalculator({ data, token, accepted = null }: { data
 				{(o.oneTime ?? []).length > 0 && (
 					<div className="mt-7 space-y-2">
 						<div className="text-[11px] font-extrabold tracking-[.16em] uppercase text-gray-200">{T.oneTime}</div>
-						{o.oneTime!.map((x) => (
-							<div key={x.id} className={cx("flex items-start justify-between gap-3 p-3", BOX)}>
-								<div className="min-w-0">
-									<div className="text-sm text-gray-100 font-medium">{x.label} <Badge text={x.badge} /></div>
-									{x.desc && <p className={cx("text-[11px] mt-0.5 leading-relaxed", MUTED)}>{x.desc}</p>}
-								</div>
-								<Price price={x.price} old={x.oldPrice} />
-							</div>
-						))}
+						{o.oneTime!.map((x) => {
+							const on = !!oneTimeOn[x.id];
+							return (
+								<label key={x.id} className={cx("flex items-start justify-between gap-3 p-3", BOX, x.optional && !locked && "cursor-pointer", x.optional && !on && "opacity-55")}>
+									<div className="flex items-start gap-3 min-w-0">
+										{x.optional && (
+											<input type="checkbox" disabled={locked} checked={on} onChange={(e) => setOneTimeOn((s) => ({ ...s, [x.id]: e.target.checked }))} className="mt-1 accent-brand-orange-l" />
+										)}
+										<div className="min-w-0">
+											<div className="text-sm text-gray-100 font-medium">{x.label} <Badge text={x.badge} /></div>
+											{x.desc && <p className={cx("text-[11px] mt-0.5 leading-relaxed", MUTED)}>{x.desc}</p>}
+										</div>
+									</div>
+									<Price price={x.price} old={x.oldPrice} />
+								</label>
+							);
+						})}
 					</div>
 				)}
 
