@@ -64,6 +64,13 @@ export async function POST(req: Request) {
 		}
 		answers.presenceLinks = presenceLinks;
 		if (!answers.presenceUrl) answers.presenceUrl = Object.entries(presenceLinks).map(([k, v]) => `${k}: ${v}`).join(" · ");
+		// Стъпка „Какво търсите“ — id-та на услуги от каталога (a-z0-9_) + „посъветвайте ме“.
+		// de-os ги пази в answers и генерира офертата по тях.
+		answers.services = (Array.isArray(body.services) ? body.services : [])
+			.map((x) => str(x, 40).toLowerCase())
+			.filter((x) => /^[a-z0-9_]+$/.test(x))
+			.slice(0, 20);
+		answers.servicesAdvise = body.servicesAdvise === true;
 
 		const behaviour: Behaviour = typeof body.behaviour === "object" && body.behaviour ? (body.behaviour as Behaviour) : {};
 		const lang = body.lang === "en" ? "en" : "bg";
@@ -130,6 +137,7 @@ function summary(s: Lead, p: Profile) {
 		`Цел: ${s_(s.goal) || "—"}`,
 		`Цена на бездействието: ${s_(s.cost) || "— (пропуснато)"}`,
 		``,
+		`Търси: ${Array.isArray(s.services) && s.services.length ? (s.services as string[]).join(", ") : s.servicesAdvise ? "не знае — иска съвет" : "—"}`,
 		`Попълвал: ${mins} мин · връщания: ${s.behaviour.revisits ?? "—"} · език: ${s.lang}`,
 		`Контакт: ${s.contactName} · ${s.phone || "—"} · ${s.email || "—"}`,
 		s.partnerCode ? `Партньор: ${s.partnerCode}` : "",

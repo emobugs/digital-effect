@@ -8,13 +8,14 @@ import { notFound } from "next/navigation";
 import OfferCalculator from "@/components/OfferCalculator";
 import { deosApi } from "@/lib/services";
 import type { OfferData } from "@/lib/offer-types";
+import type { AcceptedInfo } from "@/lib/offer-selection";
 
 export const dynamic = "force-dynamic";
 
 type Params = Promise<{ token: string }>;
 type Search = Promise<{ preview?: string }>;
 
-interface OfferResponse { data: OfferData; status: string; mode: string; updatedAt?: string }
+interface OfferResponse { data: OfferData; status: string; mode: string; updatedAt?: string; accepted?: AcceptedInfo | null }
 
 async function loadOffer(token: string, preview: boolean): Promise<OfferResponse | null> {
 	if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) return null;
@@ -56,7 +57,7 @@ export default async function OfertaPage({ params, searchParams }: { params: Par
 	if (!offer) notFound();
 	return (
 		<main className="min-h-screen bg-dark-obsidian text-gray-100">
-			<OfferCalculator data={offer.data} />
+			<OfferCalculator data={offer.data} token={token} accepted={offer.accepted ?? null} />
 		</main>
 	);
 }

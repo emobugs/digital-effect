@@ -9,6 +9,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { useMemo, useState } from "react";
 import { normalizeOffer, type OfferData } from "@/lib/offer-types";
+import type { OfferSelection, AcceptedInfo } from "@/lib/offer-selection";
+import OfferAccept from "@/components/OfferAccept";
 
 const EUR = (n: number) => `${Math.round(n)} €`;
 const cx = (...a: (string | false | undefined | null)[]) => a.filter(Boolean).join(" ");
@@ -43,24 +45,27 @@ function Feature({ icon, html }: { icon: string; html: string }) {
 	);
 }
 
-function Range({ value, min, max, step, onChange, ariaLabel }: { value: number; min: number; max: number; step: number; onChange: (v: number) => void; ariaLabel: string }) {
+function Range({ value, min, max, step, onChange, ariaLabel, disabled }: { value: number; min: number; max: number; step: number; onChange: (v: number) => void; ariaLabel: string; disabled?: boolean }) {
 	return (
-		<input type="range" min={min} max={max} step={step} value={value} aria-label={ariaLabel}
+		<input type="range" min={min} max={max} step={step} value={value} aria-label={ariaLabel} disabled={disabled}
 			onChange={(e) => onChange(Number(e.target.value))}
 			className="w-full mt-3 cursor-pointer accent-brand-orange-l" />
 	);
 }
 
-export default function OfferCalculator({ data }: { data: OfferData }) {
+export default function OfferCalculator({ data, token, accepted = null }: { data: OfferData; token?: string; accepted?: AcceptedInfo | null }) {
 	const o = useMemo(() => normalizeOffer(data), [data]);
 	const packages = o.packages;
+	// Приета оферта → калкулаторът показва точно приетия избор и е заключен
+	const locked = !!accepted;
+	const S = accepted?.selection ?? null;
 
-	const [pkgOn, setPkgOn] = useState<Record<string, boolean>>(() => Object.fromEntries(packages.map((p) => [p.id, p.optional ? !!p.defaultOn : p.defaultOn !== false])));
-	const [budgets, setBudgets] = useState<Record<string, number>>(() => Object.fromEntries(packages.filter((p) => p.budget).map((p) => [p.id, p.budget!.default])));
-	const [choice, setChoice] = useState<Record<string, string>>(() => Object.fromEntries((o.choiceGroups ?? []).map((g) => [g.id, ""])));
-	const [tier, setTier] = useState<Record<string, number>>(() => Object.fromEntries((o.tierGroups ?? []).map((g) => [g.id, 0])));
-	const [checks, setChecks] = useState<Record<string, boolean>>(() => Object.fromEntries((o.checkboxes ?? []).map((c) => [c.id, !!c.defaultOn])));
-	const [counts, setCounts] = useState<Record<string, number>>(() => Object.fromEntries((o.counters ?? []).map((c) => [c.id, 0])));
+	const [pkgOn, setPkgOn] = useState<Record<string, boolean>>(() => Object.fromEntries(packages.map((p) => [p.id, S ? S.packages?.[p.id]?.on !== false && (!!S.packages?.[p.id] || !p.optional) : p.optional ? !!p.defaultOn : p.defaultOn !== false])));
+	const [budgets, setBudgets] = useState<Record<string, number>>(() => Object.fromEntries(packages.filter((p) => p.budget).map((p) => [p.id, S?.packages?.[p.id]?.budget ?? p.budget!.default])));
+	const [choice, setChoice] = useState<Record<string, string>>(() => Object.fromEntries((o.choiceGroups ?? []).map((g) => [g.id, S?.choices?.[g.id] ?? ""])));
+	const [tier, setTier] = useState<Record<string, number>>(() => Object.fromEntries((o.tierGroups ?? []).map((g) => [g.id, S?.tiers?.[g.id] ?? 0])));
+	const [checks, setChecks] = useState<Record<string, boolean>>(() => Object.fromEntries((o.checkboxes ?? []).map((c) => [c.id, S ? !!S.checkboxes?.[c.id] : !!c.defaultOn])));
+	const [counts, setCounts] = useState<Record<string, number>>(() => Object.fromEntries((o.counters ?? []).map((c) => [c.id, S?.counters?.[c.id] ?? 0])));
 
 	const T = { agency: "Общо към Digital Effect", budget: "Рекламен бюджет (директно към платформите)", grand: "ОБЩА МЕСЕЧНА ИНВЕСТИЦИЯ", oneTime: "Еднократно", ...(o.totalLabels ?? {}) };
 
@@ -85,6 +90,11 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 	const agency = rows.reduce((s, r) => s + r[1], 0);
 	const oneTimeSum = (o.oneTime ?? []).reduce((s, x) => s + x.price, 0);
 	const hasBudget = packages.some((p) => p.budget && pkgOn[p.id]);
+	// Изборът, който отива в de-os при преглед/приемане (сумите се смятат там)
+	const selection: OfferSelection = {
+		packages: Object.fromEntries(packages.map((p) => [p.id, { on: !!pkgOn[p.id], budget: p.budget ? budgets[p.id] ?? p.budget.default : undefined }])),
+		choices: choice, tiers: tier, checkboxes: checks, counters: counts,
+	};
 	const hasAddons = !!((o.choiceGroups?.length) || (o.tierGroups?.length) || (o.checkboxes?.length) || (o.counters?.length));
 
 	return (
@@ -128,7 +138,7 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 								</div>
 								{p.optional && (
 									<label className="mt-3 flex items-center gap-2 text-sm cursor-pointer select-none">
-										<input type="checkbox" checked={on} onChange={(e) => setPkgOn((s) => ({ ...s, [p.id]: e.target.checked }))} className="accent-brand-orange-l w-4 h-4" />
+										<input type="checkbox" disabled={locked} checked={on} onChange={(e) => setPkgOn((s) => ({ ...s, [p.id]: e.target.checked }))} className="accent-brand-orange-l w-4 h-4" />
 										<span className="text-gray-200">{on ? "Включено в офертата" : "Добави към офертата"}</span>
 									</label>
 								)}
@@ -139,7 +149,7 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 											<span className="text-xs font-semibold text-gray-200">{b.label}</span>
 											<span className={cx("text-sm font-bold", ACCENT)}>{EUR(budgets[p.id] ?? b.default)} / мес</span>
 										</div>
-										<Range value={budgets[p.id] ?? b.default} min={b.min} max={b.max} step={b.step ?? 50} ariaLabel={b.label}
+										<Range disabled={locked} value={budgets[p.id] ?? b.default} min={b.min} max={b.max} step={b.step ?? 50} ariaLabel={b.label}
 											onChange={(v) => setBudgets((s) => ({ ...s, [p.id]: v }))} />
 										<div className={cx("flex justify-between text-[10px] mt-1", MUTED)}><span>{EUR(b.min)}</span><span>{EUR(b.max)}</span></div>
 										{b.note && <p className={cx("text-[11px] mt-2 leading-relaxed", MUTED)}>{b.note}</p>}
@@ -162,12 +172,12 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 									<Badge text={g.badge} />
 								</div>
 								<label className={cx("flex items-center gap-3 p-3 cursor-pointer", BOX, choice[g.id] === "" && "border-white/25")}>
-									<input type="radio" name={`grp-${g.id}`} checked={choice[g.id] === ""} onChange={() => setChoice((s) => ({ ...s, [g.id]: "" }))} className="accent-brand-orange-l" />
+									<input type="radio" disabled={locked} name={`grp-${g.id}`} checked={choice[g.id] === ""} onChange={() => setChoice((s) => ({ ...s, [g.id]: "" }))} className="accent-brand-orange-l" />
 									<span className="flex-1 flex justify-between text-sm"><span className="text-gray-200 font-medium">{g.noneLabel ?? "Без"}</span><span className={MUTED}>0 €</span></span>
 								</label>
 								{g.options.map((op) => (
 									<label key={op.id} className={cx("flex items-start gap-3 p-3 cursor-pointer", BOX, choice[g.id] === op.id && "border-brand-orange-l/50")}>
-										<input type="radio" name={`grp-${g.id}`} checked={choice[g.id] === op.id} onChange={() => setChoice((s) => ({ ...s, [g.id]: op.id }))} className="mt-1 accent-brand-orange-l" />
+										<input type="radio" disabled={locked} name={`grp-${g.id}`} checked={choice[g.id] === op.id} onChange={() => setChoice((s) => ({ ...s, [g.id]: op.id }))} className="mt-1 accent-brand-orange-l" />
 										<span className="flex-1 min-w-0">
 											<span className="flex justify-between gap-2 text-sm"><span className="text-gray-100 font-medium">{op.label}</span><Price price={op.price} old={op.oldPrice} /></span>
 											{op.desc && <span className={cx("block text-[11px] mt-0.5 leading-relaxed", MUTED)}>{op.desc}</span>}
@@ -187,7 +197,7 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 										<span className="text-sm font-semibold text-gray-100">{g.title}</span>
 										{sel.price ? <Price price={sel.price} old={(sel as { oldPrice?: number }).oldPrice} /> : <span className={MUTED}>0 €</span>}
 									</div>
-									<Range value={tier[g.id] ?? 0} min={0} max={stops.length - 1} step={1} ariaLabel={g.title} onChange={(v) => setTier((s) => ({ ...s, [g.id]: v }))} />
+									<Range disabled={locked} value={tier[g.id] ?? 0} min={0} max={stops.length - 1} step={1} ariaLabel={g.title} onChange={(v) => setTier((s) => ({ ...s, [g.id]: v }))} />
 									<div className={cx("flex justify-between text-[10px] mt-1", MUTED)}>{stops.map((s, i) => <span key={i}>{s.price ? EUR(s.price) : s.label}</span>)}</div>
 									{sel.desc && <p className={cx("text-[11px] mt-2 leading-relaxed", MUTED)}>{sel.desc}</p>}
 									{g.note && <p className={cx("text-[11px] mt-1 leading-relaxed", MUTED)}>{g.note}</p>}
@@ -197,7 +207,7 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 
 						{(o.checkboxes ?? []).map((c) => (
 							<label key={c.id} className={cx("flex items-start gap-3 p-3 cursor-pointer", BOX, c.highlight && HI)}>
-								<input type="checkbox" checked={!!checks[c.id]} onChange={(e) => setChecks((s) => ({ ...s, [c.id]: e.target.checked }))} className="mt-1 accent-brand-orange-l" />
+								<input type="checkbox" disabled={locked} checked={!!checks[c.id]} onChange={(e) => setChecks((s) => ({ ...s, [c.id]: e.target.checked }))} className="mt-1 accent-brand-orange-l" />
 								<span className="flex-1 min-w-0">
 									<span className="flex justify-between gap-2 text-sm"><span className="text-gray-100 font-medium">{c.label} <Badge text={c.badge} /></span><Price price={c.price} old={c.oldPrice} suffix="/мес" /></span>
 									{c.desc && <span className={cx("block text-[11px] mt-0.5 leading-relaxed", MUTED)}>{c.desc}</span>}
@@ -212,9 +222,9 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 									{c.desc && <p className={cx("text-[11px] mt-0.5 leading-relaxed", MUTED)}>{c.desc}</p>}
 								</div>
 								<div className="flex items-center gap-1.5">
-									<button type="button" aria-label="по-малко" onClick={() => setCounts((s) => ({ ...s, [c.id]: Math.max(0, (s[c.id] ?? 0) - 1) }))} className="w-7 h-7 rounded-md border border-white/15 text-gray-200 hover:border-white/30">−</button>
+									<button type="button" disabled={locked} aria-label="по-малко" onClick={() => setCounts((s) => ({ ...s, [c.id]: Math.max(0, (s[c.id] ?? 0) - 1) }))} className="w-7 h-7 rounded-md border border-white/15 text-gray-200 hover:border-white/30">−</button>
 									<span className="w-6 text-center text-sm font-bold tabular-nums">{counts[c.id] ?? 0}</span>
-									<button type="button" aria-label="повече" onClick={() => setCounts((s) => ({ ...s, [c.id]: (s[c.id] ?? 0) + 1 }))} className="w-7 h-7 rounded-md border border-white/15 text-gray-200 hover:border-white/30">+</button>
+									<button type="button" disabled={locked} aria-label="повече" onClick={() => setCounts((s) => ({ ...s, [c.id]: (s[c.id] ?? 0) + 1 }))} className="w-7 h-7 rounded-md border border-white/15 text-gray-200 hover:border-white/30">+</button>
 								</div>
 							</div>
 						))}
@@ -259,8 +269,21 @@ export default function OfferCalculator({ data }: { data: OfferData }) {
 					</div>
 				)}
 				{o.commitment && <p className={cx("text-[11px] text-center mt-4", MUTED)}>{o.commitment}</p>}
-				{o.validUntil && <p className="text-[11px] text-center mt-1 text-gray-500">Валидно до {o.validUntil}</p>}
+				{o.validUntil && !locked && <p className="text-[11px] text-center mt-1 text-gray-500">Валидно до {o.validUntil}</p>}
 			</div>
+
+			{token && (
+				<OfferAccept
+					token={token}
+					selection={selection}
+					grand={agency + budgetSum}
+					clientName={o.client?.name ?? o.brandTitle}
+					contactName={o.client?.contact}
+					contactEmail={o.client?.email}
+					contactPhone={o.client?.phone}
+					accepted={accepted}
+				/>
+			)}
 
 			<footer className={cx("relative text-center text-xs mt-10 pt-6 border-t border-white/10", MUTED)}>
 				{o.footerLine ?? `© ${new Date().getFullYear()} Digital Effect`}
