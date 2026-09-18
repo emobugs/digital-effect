@@ -2,18 +2,18 @@
 
 // ── /partners/me — кабинетът на партньора ───────────────────────────────────
 // Вход с личния линк от имейла (?k=<token>); после сесията е httpOnly cookie,
-// сложен от /api/partners/me — нищо тайно не стои в localStorage. Кодът и
-// телефонът служат само за „изпрати ми линка наново“. Показва само неговото:
+// сложен от /api/partners/me — нищо тайно не стои в localStorage. „Изпрати ми
+// линк за вход“ иска само имейла (отговорът е еднакъв винаги). Показва само неговото:
 // лидове, сделки (без суми на клиента), начисления, плащания, ниво.
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Shell, Card, Kicker, H2, Note, INPUT, BTN, BTN_GHOST, cx } from "../ui";
-import { normalizeCode } from "@/lib/partner-ref";
 import { useRouter } from "next/navigation";
 
 type Cabinet = {
 	name: string; code: string; status: string; pay_method: "cash" | "credit"; is_client: boolean; link: string; qr: string | null;
+	gift: { key: string; label: string; desc?: string; delivered_at: string | null } | null; client_bonus: string;
 	tier: { activeClients: number; rate: number; nextTier: { min: number; rate: number; need: number } | null };
 	tiers: { min: number; rate: number }[]; level2_rate: number; min_payout: number; credit_bonus: number;
 	leads: { business_name: string; status: string; source: string; created_at: string }[];
@@ -34,8 +34,7 @@ const KIND = { direct: "клиент", override: "партньор", project: "�
 
 export default function PartnerCabinetPage() {
 	const router = useRouter();
-	const [code, setCode] = useState("");
-	const [phone, setPhone] = useState("");
+	const [email, setEmail] = useState("");
 	const [busy, setBusy] = useState(true);
 	const [err, setErr] = useState("");
 	const [sent, setSent] = useState(false);
@@ -59,15 +58,16 @@ export default function PartnerCabinetPage() {
 			token = new URLSearchParams(window.location.search).get("k")?.toLowerCase() || "";
 			if (token) window.history.replaceState(null, "", "/partners/me"); // махаме тайната от адреса/историята
 		} catch { /* */ }
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- вход при mount; load сетва state след fetch
 		void load(token);
 	}, []);
 
 	async function resend() {
-		const nc = normalizeCode(code);
-		if (!nc || phone.replace(/\D/g, "").length < 9) { setErr("Въведете код и телефон."); return; }
+		const e = email.trim().toLowerCase();
+		if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) { setErr("Въведете имейла, с който сте се регистрирали."); return; }
 		setBusy(true); setErr("");
 		try {
-			await fetch("/api/partners/me", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: nc, phone, resend: true }) });
+			await fetch("/api/partners/me", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: e, resend: true }) });
 			setSent(true);
 		} catch { setErr("Нещо се обърка. Опитайте пак."); } finally { setBusy(false); }
 	}
@@ -83,7 +83,7 @@ export default function PartnerCabinetPage() {
 
 	async function logout() {
 		try { await fetch("/api/partners/me", { method: "DELETE" }); } catch { /* */ }
-		setCab(null); setCode(""); setPhone(""); router.refresh();
+		setCab(null); setEmail(""); router.refresh();
 	}
 
 	if (!cab) {
@@ -93,21 +93,20 @@ export default function PartnerCabinetPage() {
 					<Kicker>Кабинет на партньора</Kicker>
 					{busy && !sent ? <Note>Зареждаме…</Note> : sent ? (
 						<>
-							<H2>Ако данните съвпадат, линкът е в пощата Ви.</H2>
-							<Note>Отворете имейла от partners@digitaleffect.bg и натиснете линка за кабинета. Проверете и папка „Спам“.</Note>
+							<H2>Ако имейлът е на партньор, линкът за вход е в пощата Ви.</H2>
+							<Note>Отворете имейла от partners@digitaleffect.bg и натиснете линка. Проверете и папка „Спам“. Нищо не идва? <button type="button" className="underline text-brand-orange-l" onClick={() => setSent(false)}>Опитайте с друг имейл</button> или пишете ни.</Note>
 						</>
 					) : (
 						<>
-							<H2>Кабинетът се отваря от личния Ви линк.</H2>
-							<Note>Линкът е в имейла, който получихте при регистрация/одобрение. Ако не го намирате — въведете кода и телефона си и ще Ви го пратим отново.</Note>
-							<div className="grid sm:grid-cols-2 gap-3 mt-5">
-								<input className={cx(INPUT, "font-mono uppercase")} placeholder="DE-IVAN-7K3Q" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} autoComplete="off" />
-								<input className={INPUT} placeholder="Телефон" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" onKeyDown={(e) => e.key === "Enter" && resend()} />
+							<H2>Вход в кабинета</H2>
+							<Note>Кабинетът се отваря от личен линк — без парола. Въведете имейла, с който сте се регистрирали, и ще Ви пратим линк за вход.</Note>
+							<div className="mt-5">
+								<input className={INPUT} placeholder="Имейл" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" onKeyDown={(e) => e.key === "Enter" && resend()} />
 							</div>
 							{err && <div className="mt-3 text-sm text-red-400">{err}</div>}
 							<div className="flex flex-wrap gap-3 mt-5">
-								<button type="button" className={BTN} disabled={busy} onClick={resend}>Изпрати ми линка</button>
-								<Link href="/partners" className={BTN_GHOST}>Нямам код</Link>
+								<button type="button" className={BTN} disabled={busy} onClick={resend}>Изпрати ми линк за вход</button>
+								<Link href="/partners" className={BTN_GHOST}>Не съм партньор още</Link>
 							</div>
 						</>
 					)}
@@ -138,6 +137,10 @@ export default function PartnerCabinetPage() {
 				</div>
 				{next && <div className="mt-3 text-sm text-brand-orange-l">Още {next.need} {next.need === 1 ? "клиент" : "клиента"} до {pct(next.rate)} — и то за всичките Ви клиенти.</div>}
 				{cab.totals.unpaid > 0 && cab.totals.unpaid < cab.min_payout && <div className="mt-1 text-xs text-gray-500">Изплащаме при натрупани {eur(cab.min_payout)} — сумата се прехвърля към следващия месец.</div>}
+				{cab.gift && (
+					<div className="mt-3 text-sm text-gray-300">🎁 Подарък: <span className="text-gray-100">{cab.gift.label}</span> — {cab.gift.delivered_at ? <span className="text-emerald-400">доставен {dt(cab.gift.delivered_at)}</span> : <span className="text-gray-400">{cab.status === "active" ? "подготвяме го, ще се свържем с Вас" : "след одобрение"}</span>}</div>
+				)}
+				{cab.client_bonus && <div className="mt-1 text-xs text-gray-500">Кажете на хората, които пращате: през Вашия линк получават {cab.client_bonus}.</div>}
 				<div className="mt-5 rounded-xl bg-black/40 border border-white/10 px-4 py-3 font-mono text-sm break-all">{cab.link}</div>
 				<div className="flex flex-wrap gap-3 mt-3">
 					<button type="button" className={BTN} onClick={async () => { try { await navigator.clipboard.writeText(cab.link); } catch { /* */ } }}>Копирай линка</button>

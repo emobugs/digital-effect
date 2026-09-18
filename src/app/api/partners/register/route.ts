@@ -32,6 +32,7 @@ export async function POST(req: Request) {
 			is_client: !!body.is_client,
 			pay_method: body.pay_method === "cash" || body.pay_method === "credit" ? body.pay_method : undefined,
 			parent_code: normalizeCode(str(body.parent_code, 20)) ?? "",
+			gift: str(body.gift, 30).toLowerCase().replace(/[^a-z0-9_]/g, ""),
 			consent: true,
 		},
 	});

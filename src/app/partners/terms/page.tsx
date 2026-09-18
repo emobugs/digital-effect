@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Shell } from "../ui";
 import { pct, eur } from "../program";
 import { loadProgram } from "@/lib/partners-program";
 
@@ -15,10 +16,9 @@ export default async function PartnersTermsPage() {
 	const PROGRAM = await loadProgram();
 	const tiers = [...PROGRAM.tiers].sort((a, b) => a.min - b.min);
 	return (
-		<main className="min-h-screen bg-dark-obsidian text-gray-200">
-			<div className="max-w-2xl mx-auto px-4 py-14">
-				<Link href="/" className="font-display font-black tracking-tight text-lg">Digital<span className="text-brand-orange-l">Effect</span></Link>
-				<h1 className="font-display font-black text-3xl tracking-tight mt-8 mb-2">Условия на партньорската програма</h1>
+		<Shell>
+			<div>
+				<h1 className="font-display font-black text-3xl tracking-tight mb-2">Условия на партньорската програма</h1>
 				<p className="text-gray-500 text-sm mb-8">Digital Effect Partners · в сила от 04.09.2026 г.</p>
 
 				<div className="space-y-6 text-[15px] leading-relaxed text-gray-300">
@@ -64,6 +64,6 @@ export default async function PartnersTermsPage() {
 					</section>
 				</div>
 			</div>
-		</main>
+		</Shell>
 	);
 }

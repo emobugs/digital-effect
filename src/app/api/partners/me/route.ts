@@ -8,7 +8,8 @@ import { normalizeCode } from "@/lib/partner-ref";
 // за да не го вижда JavaScript при XSS.
 //   POST  {token}                 → кабинет + cookie
 //   POST  {}                      → кабинет от cookie
-//   POST  {code, phone, resend}   → {ok:true} винаги (имейл ако съвпада)
+//   POST  {email, resend}         → {ok:true} винаги (линкът отива на имейла, ако е на партньор)
+//   POST  {code, phone, resend}   → {ok:true} винаги (стар вариант)
 //   PATCH {pay_method}            → смяна (token от cookie)
 //   DELETE                        → изход
 export const runtime = "nodejs";
@@ -36,6 +37,13 @@ export async function POST(req: Request) {
 	const body = (await req.json().catch(() => null)) as Record<string, unknown> | null;
 
 	if (body?.resend) {
+		// „Изпрати ми линк за вход“ — само имейл. Отговорът е еднакъв винаги
+		// (имейлът не е оракул за това кой е партньор). Старият вариант код+телефон остава.
+		const email = str(body.email, 120).toLowerCase();
+		if (email) {
+			if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) await proxy("/me", { method: "POST", ip, body: { email, resend: true } });
+			return NextResponse.json({ ok: true });
+		}
 		const code = normalizeCode(str(body.code, 20));
 		const phone = str(body.phone, 30);
 		if (code && phone.replace(/\D/g, "").length >= 9) await proxy("/me", { method: "POST", ip, body: { code, phone, resend: true } });

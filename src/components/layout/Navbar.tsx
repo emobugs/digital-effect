@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { NAV_LINKS, SITE } from "@/lib/constants";
+import { NAV_LINKS, SITE, navHref } from "@/lib/constants";
+import { usePathname } from "next/navigation";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -11,6 +12,9 @@ export default function Navbar() {
 	const [scrolled, setScrolled] = useState(false);
 	const [open, setOpen] = useState(false);
 	const { scrollY } = useScroll();
+	const pathname = usePathname();
+	const isHome = pathname === "/";
+	const active = (href: string) => !href.startsWith("#") && (pathname === href || pathname?.startsWith(`${href}/`));
 
 	useMotionValueEvent(scrollY, "change", (latest) => {
 		setScrolled(latest > 50);
@@ -29,7 +33,7 @@ export default function Navbar() {
 				transition={{ duration: 0.3 }}
 			>
 				{/* ЛОГО */}
-				<Link href="#hero">
+				<Link href={isHome ? "#hero" : "/"}>
 					<Image
 						src="/logo.png"
 						alt={SITE.name}
@@ -45,8 +49,8 @@ export default function Navbar() {
 					{NAV_LINKS.map((link) => (
 						<li key={link.href}>
 							<a
-								href={link.href}
-								className="text-white/50 text-[12px] font-medium tracking-[2px] uppercase transition-colors duration-300 hover:text-white"
+								href={navHref(link.href, pathname)}
+								className={`text-[12px] font-medium tracking-[2px] uppercase transition-colors duration-300 hover:text-white ${active(link.href) ? "text-white" : "text-white/50"}`}
 							>
 								{link.label}
 							</a>
@@ -55,7 +59,7 @@ export default function Navbar() {
 				</ul>
 
 				{/* ДЕСКТОП — CTA */}
-				<a href="#cta" className="btn-primary hidden md:inline-flex">
+				<a href={navHref("#cta", pathname)} className="btn-primary hidden md:inline-flex">
 					Свържи се с нас
 				</a>
 
@@ -82,7 +86,7 @@ export default function Navbar() {
 							{NAV_LINKS.map((link) => (
 								<li key={link.href}>
 									<a
-										href={link.href}
+										href={navHref(link.href, pathname)}
 										onClick={close}
 										className="flex items-center h-12 text-white/60 text-[13px] font-medium tracking-[2px] uppercase hover:text-white transition-colors duration-300 border-b border-white/[0.04] last:border-0"
 									>
@@ -93,7 +97,7 @@ export default function Navbar() {
 						</ul>
 						<div className="px-6 pb-8">
 							<a
-								href="#cta"
+								href={navHref("#cta", pathname)}
 								onClick={close}
 								className="btn-primary w-full flex items-center justify-center"
 							>

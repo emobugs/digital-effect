@@ -7,7 +7,7 @@
 // Не вижда: осите, вердикта, флаговете. Те се смятат в /api/hello (сървър).
 // ═══════════════════════════════════════════════════════════════════════════
 
-import Link from "next/link";
+import PageFrame from "@/components/layout/PageFrame";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STEPS, publicReport, type Answers, type Field, type PublicReport, type Step } from "@/lib/lead-scoring";
 import { resolvePartnerCode } from "@/lib/partner-ref";
@@ -33,6 +33,7 @@ const T = {
 		referred: "Препоръчан от",
 		svcTitle: "Какво търсите", svcLead: "Кое от това би било най-полезно за Вас сега?",
 		svcLabel: "Изберете едно или повече", svcAdvise: "Не знам — посъветвайте ме",
+		bonus: "бонус за Вас",
 	},
 	en: {
 		kicker: "Digital Effect Growth Score",
@@ -51,6 +52,7 @@ const T = {
 		referred: "Referred by",
 		svcTitle: "What you're looking for", svcLead: "Which of these would help you most right now?",
 		svcLabel: "Pick one or more", svcAdvise: "Not sure — advise me",
+		bonus: "your bonus",
 	},
 } as const;
 
@@ -155,16 +157,15 @@ function Ring({ score }: { score: number }) {
 /* ── Обвивка ──────────────────────────────────────────────────────────── */
 function Shell({ children, pct, lang, setLang, topRef }: { children: React.ReactNode; pct: number; lang: Lang; setLang: (l: Lang) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
 	return (
-		<main className="min-h-screen bg-dark-obsidian text-gray-100">
-			<div ref={topRef} className="relative w-full max-w-2xl mx-auto px-4 py-8 sm:py-14">
+		<PageFrame>
+			<div ref={topRef} className="relative w-full max-w-2xl mx-auto px-4 py-8 sm:py-14 scroll-mt-[76px]">
 				{/* декоративни глоу-ове — в clip-нат слой, за да не създават втори скрол */}
 				<div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
 					<div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[70px] opacity-60" style={{ background: "radial-gradient(circle, rgba(242,101,34,.16) 0%, transparent 65%)" }} />
 					<div className="absolute -bottom-24 -right-24 w-[420px] h-[420px] rounded-full blur-[70px] opacity-60" style={{ background: "radial-gradient(circle, rgba(245,156,26,.12) 0%, transparent 65%)" }} />
 				</div>
 
-				<div className="relative flex items-center justify-between mb-5">
-					<Link href="/" className="font-display font-black tracking-tight text-lg">Digital<span className="text-brand-orange-l">Effect</span></Link>
+				<div className="relative flex items-center justify-end mb-5">
 					<div className="flex gap-1 rounded-full bg-white/5 p-1">
 						{(["bg", "en"] as Lang[]).map((l) => (
 							<button key={l} type="button" onClick={() => setLang(l)} className={cx("px-3 py-1 rounded-full text-xs font-semibold uppercase transition", lang === l ? "bg-brand-grad text-white" : "text-white/50 hover:text-white/80")}>{l}</button>
@@ -179,7 +180,7 @@ function Shell({ children, pct, lang, setLang, topRef }: { children: React.React
 					{children}
 				</div>
 			</div>
-		</main>
+		</PageFrame>
 	);
 }
 
@@ -195,7 +196,7 @@ export default function HelloPage() {
 	const [done, setDone] = useState<PublicReport | null>(null);
 	// DE Partners: ?p=DE-… → пази се 90 дни, праща се като partnerCode (отделно
 	// поле; meta.ref е Smart Reach линкът). Бадж само ако кодът е активен.
-	const [partner, setPartner] = useState<{ code: string; name: string | null }>({ code: "", name: null });
+	const [partner, setPartner] = useState<{ code: string; name: string | null; bonus: string }>({ code: "", name: null, bonus: "" });
 	// Ценоразписът (de-os → /api/services) — за стъпката „Какво търсите“. Fallback е вграден.
 	const [catalog, setCatalog] = useState<PublicCatalog>(() => fallbackCatalog(true));
 	const t = T[lang];
@@ -228,8 +229,8 @@ export default function HelloPage() {
 		let alive = true;
 		fetch(`/api/partners/check?code=${encodeURIComponent(code)}`)
 			.then((r) => r.json())
-			.then((d: { valid?: boolean; name?: string }) => { if (alive) setPartner({ code, name: d?.valid && d.name ? String(d.name).slice(0, 40) : null }); })
-			.catch(() => { if (alive) setPartner({ code, name: null }); });
+			.then((d: { valid?: boolean; name?: string; bonus?: string }) => { if (alive) setPartner({ code, name: d?.valid && d.name ? String(d.name).slice(0, 40) : null, bonus: d?.valid && d.bonus ? String(d.bonus).slice(0, 120) : "" }); })
+			.catch(() => { if (alive) setPartner({ code, name: null, bonus: "" }); });
 		return () => { alive = false; };
 	}, []);
 
@@ -292,8 +293,9 @@ export default function HelloPage() {
 		return (
 			<Shell pct={pct} lang={lang} setLang={setLang} topRef={topRef}>
 				{partner.name && (
-					<div className="inline-flex items-center gap-2 rounded-full border border-brand-orange-l/30 bg-brand-orange-l/[0.08] px-3 py-1 text-xs text-gray-200 mb-4">
+					<div className="inline-flex items-center gap-2 flex-wrap rounded-full border border-brand-orange-l/30 bg-brand-orange-l/[0.08] px-3 py-1 text-xs text-gray-200 mb-4">
 						<span className="w-1.5 h-1.5 rounded-full bg-brand-orange-l" />{t.referred} <span className="font-semibold">{partner.name}</span>
+						{partner.bonus && <span className="text-gray-400">· {t.bonus}: <span className="text-gray-100 font-semibold">{partner.bonus}</span></span>}
 					</div>
 				)}
 				<div className="text-[11px] font-extrabold tracking-[.18em] uppercase text-brand-orange-l mb-3">{t.kicker}</div>

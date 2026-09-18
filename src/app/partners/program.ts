@@ -17,6 +17,10 @@ export type Program = {
 	payoutDay: number;
 	attributionDays: number;
 	manualLeadDays: number;
+	/** подарък при регистрация — партньорът избира един */
+	gifts: { key: string; label: string; desc: string }[];
+	/** бонус за клиента, доведен през партньор (празно = няма) */
+	clientBonus: string;
 	/** откъде са числата — "deos" (живи) или "fallback" (де-ос не отговори) */
 	source: "deos" | "fallback";
 	updatedAt: string | null;
@@ -40,6 +44,11 @@ export const PROGRAM: Program = {
 	payoutDay: 10,
 	attributionDays: 90,
 	manualLeadDays: 30,
+	gifts: [
+		{ key: "google_audit", label: "Одит на Google профила и рекламите Ви", desc: "Преглеждаме Google Бизнес профила и Google Ads акаунта Ви (ако имате) и Ви пращаме какво да поправите — конкретно, по точки." },
+		{ key: "creatives", label: "2 безплатни рекламни криейтива", desc: "Две готови визии за Facebook/Instagram за Вашия бизнес — с текст, в размер за публикуване." },
+	],
+	clientBonus: "20 % отстъпка за първия месец",
 	source: "fallback",
 	updatedAt: null,
 };
@@ -71,6 +80,12 @@ export function programFromDeos(d: unknown): Program | null {
 		payoutDay: num("payout_day", PROGRAM.payoutDay),
 		attributionDays: num("attribution_days", PROGRAM.attributionDays),
 		manualLeadDays: num("manual_lead_days", PROGRAM.manualLeadDays),
+		gifts: Array.isArray(s.gifts)
+			? (s.gifts as { key?: unknown; label?: unknown; desc?: unknown }[])
+				.map((g) => ({ key: String(g.key ?? ""), label: String(g.label ?? ""), desc: String(g.desc ?? "") }))
+				.filter((g) => g.key && g.label)
+			: PROGRAM.gifts,
+		clientBonus: typeof s.client_bonus === "string" ? s.client_bonus.slice(0, 120) : PROGRAM.clientBonus,
 		source: "deos",
 		updatedAt: typeof s.updated_at === "string" ? s.updated_at : null,
 	};

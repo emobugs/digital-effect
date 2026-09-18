@@ -13,13 +13,19 @@ export const SITE = {
 	description: "Изграждаме система, не просто публикации.",
 };
 
+// Навигацията е една за целия сайт (Navbar + Footer). Котвите (#…) са секции
+// на началната страница — извън нея `navHref()` ги прави "/#…", за да водят
+// обратно. Отделните страници (анкета, партньори) са с нормален път.
 export const NAV_LINKS = [
 	{ label: "Услуги", href: "#services" },
 	{ label: "Пакети", href: "#packages" },
 	{ label: "Процес", href: "#process" },
 	{ label: "Проекти", href: "#projects" },
+	{ label: "Анкета", href: "/hello" },
+	{ label: "Партньори", href: "/partners" },
 	{ label: "Контакт", href: "#cta" },
 ];
+export const navHref = (href: string, pathname: string | null) => (href.startsWith("#") && pathname && pathname !== "/" ? `/${href}` : href);
 export const PILLARS = [
 	{ label: "Социални Мрежи", icon: Share2 },
 	{ label: "Уеб Решения", icon: Monitor },

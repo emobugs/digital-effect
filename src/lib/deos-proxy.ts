@@ -39,7 +39,9 @@ export async function proxy(path: string, init: { method: "GET" | "POST" | "PATC
 	const ctrl = new AbortController();
 	const t = setTimeout(() => ctrl.abort(), timeoutMs);
 	try {
-		const r = await fetch(`${base()}${path}`, {
+		// Път, започващ с /api/, е абсолютен спрямо de-os (напр. /api/radar); иначе — под /api/partners.
+		const url = path.startsWith("/api/") ? new URL(path, base()).toString() : `${base()}${path}`;
+		const r = await fetch(url, {
 			method: init.method,
 			headers: {
 				"Content-Type": "application/json",

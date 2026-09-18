@@ -14,7 +14,7 @@ import { ROLES, tierRate, pct, eur, type Program } from "./program";
 import { Shell, Card, Kicker, H2, Note, INPUT, BTN, BTN_GHOST, cx } from "./ui";
 import { readPartnerCode, storePartnerCode, getStoredPartnerCode } from "@/lib/partner-ref";
 
-type Result = { code: string | null; link?: string; cabinet?: string; qr: string | null; duplicate: boolean; status?: string };
+type Result = { code: string | null; link?: string; cabinet?: string; qr: string | null; duplicate: boolean; status?: string; gift?: string | null };
 
 const steps = (months: number) => [
 	["Получавате код", "Регистрирате се за минута. Получавате личен код, линк и QR."],
@@ -86,7 +86,7 @@ function Success({ r }: { r: Result }) {
 				<button type="button" onClick={share} className={BTN_GHOST}>Сподели</button>
 				{r.cabinet && <a href={r.cabinet} className={BTN_GHOST}>Отвори кабинета</a>}
 			</div>
-			<Note>Пратихме Ви имейл с кода и личния линк за кабинета. Пазете го — с него влизате, без парола.</Note>
+			<Note>Пратихме Ви имейл с кода и личния линк за кабинета. Пазете го — с него влизате, без парола.{r.gift ? ` Подаръкът Ви (${r.gift}) тръгва след одобрението — ще се свържем с Вас.` : ""}</Note>
 			{r.qr && (
 				<div className="mt-6 flex flex-col sm:flex-row gap-4 items-start">
 					<div className="rounded-xl bg-white p-3 w-40 h-40 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: r.qr }} />
@@ -98,7 +98,7 @@ function Success({ r }: { r: Result }) {
 }
 
 export default function PartnersClient({ program }: { program: Program }) {
-	const [f, setF] = useState({ name: "", phone: "", email: "", role: "accountant", company: "", is_client: false, pay_method: "credit", consent: false });
+	const [f, setF] = useState({ name: "", phone: "", email: "", role: "accountant", company: "", is_client: false, pay_method: "credit", consent: false, gift: program.gifts[0]?.key || "" });
 	const [sending, setSending] = useState(false);
 	const [err, setErr] = useState("");
 	const [result, setResult] = useState<Result | null>(null);
@@ -110,6 +110,7 @@ export default function PartnersClient({ program }: { program: Program }) {
 		// Партньор води партньор: ?p= на тази страница → parent_code
 		const fromUrl = readPartnerCode();
 		if (fromUrl) storePartnerCode(fromUrl);
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- четем URL/localStorage след mount (SSR няма достъп)
 		setParent(fromUrl ?? getStoredPartnerCode(program.attributionDays));
 	}, [program.attributionDays]);
 
@@ -213,6 +214,7 @@ export default function PartnersClient({ program }: { program: Program }) {
 					<li>· Доведете и партньор — получавате {pct(program.level2Rate)} от клиентите на хората, които Вие сте довели.</li>
 					<li>· Изплащаме до {program.payoutDay}-то число за предходния месец, при натрупани поне {eur(program.minPayout)}.</li>
 					<li>· Банков превод или кредит срещу наша услуга за Вас — с {pct(program.creditBonus)} бонус.</li>
+					{program.clientBonus && <li>· Хората, които изпратите, получават {program.clientBonus} — препоръката Ви е подарък за тях, не реклама.</li>}
 					<li>· Клиентът трябва да е нов за Digital Effect.</li>
 				</ul>
 				<p className="text-sm text-gray-500 mt-4">Пълните условия: <Link href="/partners/terms" className="underline text-brand-orange-l">digitaleffect.bg/partners/terms</Link></p>
@@ -233,6 +235,21 @@ export default function PartnersClient({ program }: { program: Program }) {
 						</select>
 						<input className={cx(INPUT, "sm:col-span-2")} placeholder="Фирма (по избор)" value={f.company} onChange={(e) => setF({ ...f, company: e.target.value })} autoComplete="organization" />
 					</div>
+					{program.gifts.length > 0 && (
+						<div className="mt-5">
+							<div className="text-[11px] font-extrabold tracking-[.18em] uppercase text-brand-orange-l mb-2">Подарък за добре дошли — изберете един</div>
+							<div className="grid sm:grid-cols-2 gap-2">
+								{program.gifts.map((g) => (
+									<button key={g.key} type="button" onClick={() => setF({ ...f, gift: g.key })}
+										className={cx("text-left rounded-xl border px-4 py-3 transition", f.gift === g.key ? "border-brand-orange-l/50 bg-brand-orange-l/[0.07]" : "border-white/10 bg-black/30 hover:border-white/20")}>
+										<div className="font-semibold text-[15px] text-gray-100">{g.label}</div>
+										{g.desc && <div className="text-xs text-gray-400 mt-1 leading-relaxed">{g.desc}</div>}
+									</button>
+								))}
+							</div>
+							<div className="text-xs text-gray-500 mt-2">Получавате го след одобрение — без да сте довели никого.</div>
+						</div>
+					)}
 					<label className="flex items-start gap-3 mt-4 text-sm text-gray-300 cursor-pointer">
 						<input type="checkbox" className="mt-1 accent-[#f26522]" checked={f.is_client} onChange={(e) => setF({ ...f, is_client: e.target.checked })} />
 						<span>Аз съм и клиент на Digital Effect</span>

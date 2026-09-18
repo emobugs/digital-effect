@@ -1,15 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
-
-const NAV_LINKS = [
-	{ label: "Услуги", href: "#services" },
-	{ label: "Пакети", href: "#packages" },
-	{ label: "Процес", href: "#process" },
-	{ label: "Проекти", href: "#projects" },
-	{ label: "Контакт", href: "#cta" },
-];
+import { NAV_LINKS, navHref } from "@/lib/constants";
 
 const SOCIAL_LINKS = [
 	{ label: "Facebook", href: "https://www.facebook.com/digitalleffect/" },
@@ -19,6 +13,7 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
 	const year = new Date().getFullYear();
+	const pathname = usePathname();
 
 	return (
 		<footer className="border-t border-white/[0.06] bg-dark-charcoal px-4 md:px-16 pt-16 pb-8">
@@ -26,7 +21,7 @@ export default function Footer() {
 			<div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
 				{/* COL 1 — Logo + tagline */}
 				<div className="flex flex-col gap-4">
-					<a href="#" className="font-display font-black text-[22px] tracking-[-0.5px]">
+					<a href={navHref("#hero", pathname)} className="font-display font-black text-[22px] tracking-[-0.5px]">
 						Digital<span className="text-gradient">Effect</span>
 					</a>
 					<p className="text-[13px] text-white/40 leading-relaxed max-w-[220px]">
@@ -40,11 +35,11 @@ export default function Footer() {
 					<p className="text-[10px] font-semibold tracking-[3px] uppercase text-white/25 mb-5">
 						Навигация
 					</p>
-					<ul className="flex flex-row gap-3">
+					<ul className="flex flex-row flex-wrap gap-3">
 						{NAV_LINKS.map((link) => (
 							<li key={link.href}>
 								<a
-									href={link.href}
+									href={navHref(link.href, pathname)}
 									className="text-[13px] text-white/50 hover:text-white transition-colors duration-300"
 								>
 									{link.label}
@@ -102,6 +97,9 @@ export default function Footer() {
 				<div className="flex items-center gap-4 text-[11px] tracking-[0.5px]">
 					<Link href="/partners" className="text-white/30 hover:text-white/60 transition-colors">
 						Партньорска програма
+					</Link>
+					<Link href="/radar" className="text-white/30 hover:text-white/60 transition-colors">
+						Competitor Radar
 					</Link>
 					<Link href="/privacy" className="text-white/30 hover:text-white/60 transition-colors">
 						Политика за поверителност

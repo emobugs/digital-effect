@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import PageFrame from "@/components/layout/PageFrame";
 
 export const metadata: Metadata = {
 	title: "Политика за поверителност — Digital Effect",
@@ -10,10 +10,9 @@ export const metadata: Metadata = {
 //    сайта (контакт + /hello). Датата и адресът са за попълване.
 export default function PrivacyPage() {
 	return (
-		<main className="min-h-screen bg-dark-obsidian text-gray-200">
+		<PageFrame className="text-gray-200">
 			<div className="max-w-2xl mx-auto px-4 py-14">
-				<Link href="/" className="font-display font-black tracking-tight text-lg">Digital<span className="text-brand-orange-l">Effect</span></Link>
-				<h1 className="font-display font-black text-3xl tracking-tight mt-8 mb-2">Политика за поверителност</h1>
+				<h1 className="font-display font-black text-3xl tracking-tight mb-2">Политика за поверителност</h1>
 				<p className="text-gray-500 text-sm mb-8">Последна промяна: 04.09.2026 г.</p>
 
 				<div className="space-y-6 text-[15px] leading-relaxed text-gray-300">
@@ -48,6 +47,6 @@ export default function PrivacyPage() {
 					</section>
 				</div>
 			</div>
-		</main>
+		</PageFrame>
 	);
 }
