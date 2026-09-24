@@ -1,15 +1,27 @@
 # Digital Effect — Сайт Progress Notes
 
 ## Стек
-- **Framework:** Next.js (App Router)
-- **Styling:** Tailwind CSS v3
-- **Animations:** GSAP + ScrollTrigger + useGSAP
-- **Framer Motion:** само за Navbar (scroll detection + mobile drawer)
-- **Email:** Resend (server API route `/api/contact`) — EmailJS махнат от формата
-- **Icons:** Lucide React
-- **Deploy:** Node app (Hostinger) — `output: export` махнат за да работят API routes
+- **Framework:** Next.js 16 (App Router), TypeScript, Node app на Hostinger (`npm run build` = `next build --webpack`)
+- **Styling:** Tailwind CSS v3 + токени в `globals.css`; шрифтове локално (`src/fonts`, Montserrat + Inter, кирилица)
+- **Анимации:** GSAP + ScrollTrigger, Lenis (smooth scroll), CSS reveal; **3D:** three.js — една сцена в layout-а (`src/components/scene`)
+- **Данни:** цени от de-os `/api/services`, страници/ресурси от de-os `/api/site-content` (ISR + `/api/revalidate`), резервни копия в `src/data/*.fallback.json`
+- **Email:** Resend (`/api/contact`); лидове → de-os `/api/hello`
+- **Icons:** Lucide React · Framer Motion и EmailJS са махнати
+- **Документи:** `docs/redesign-2026/` (задачи, за попълване, 3D, ресурси)
 
 ---
+
+## 2026-09-23 — Редизайн: нов сайт с 3D сцена, отделни страници за услуги, нови цени от de-os, SEO/llms.txt
+
+- **Дизайн:** нова дизайн система (тъмно + брандово оранжево), нов Navbar с мега меню, мобилен dock, footer с голям wordmark, custom cursor, Lenis. Старите секции (`components/sections/*`, `HomeClient`, `Cursor`, `hooks`, `constants`) са преместени в `version1\_to_delete-digital-effect\`.
+- **3D (three.js):** едно „Ядро“ — сфера от 4 резена (реклама / соц. мрежи / сайт / AI). Секциите казват етапа с `data-stage`: 0 hero → 1 разтваряне → 2 модулите в линия → 3 фон в ъгъла. Placeholder в код; GLB се включва с `NEXT_PUBLIC_CORE_MODEL_URL` (спецификация: `docs/redesign-2026/3D-MODELI.md`).
+- **Начална:** Hero „Всяко евро да работи.“, системата (4 услуги), пътят на клиента, кейсове като тесте карти, конфигуратор (ниша + цел → план и цена → `/api/hello`), Growth Partner, гаранция „първи месец без риск“, разликата, ресурси, процес, FAQ, контакт.
+- **Нови страници:** `/uslugi` + `/uslugi/[...slug]` (реклама, Meta, Google, соц. мрежи, сайт, поддръжка, AI, чатбот, Growth Partner), `/za/[slug]` (хотели, строителство, магазини, клиники), `/marketing-agencia/[slug]` (Силистра; Русе/Добрич/Варна скрити до реален проект), `/ceni` (целият ценоразпис + калкулатор на таксата), `/rezultati` + кейсове, `/resursi` + ресурс, `/znanie` + 2 статии, `/za-nas`, `/kontakti`, 404.
+- **Цени (Цени.xlsx v2):** реклама €150 + стъпаловиден % (10/8/6/5) + setup €50–150; SMM 199/299/449; сайт 449–699 / 799–899 / 1190 / 1490; поддръжка 49/79/129; AI 290/390/790–1490/1490; автоматизации 59/119/199; **Growth Partner €790** (вместо €937 поотделно). Една формула `lib/fees.ts` = de-os `fees.js`.
+- **SEO:** `sitemap.ts`, `robots.ts` (AI ботовете разрешени), `llms.txt` + `llms-full.txt` от данните, JSON-LD (Organization/ProfessionalService, Service+Offer, FAQ, Breadcrumb, Article, WebPage+speakable), OG картинки `/og`, IndexNow ключ в `public/`. Статичните `robots.txt`/`sitemap.xml` махнати.
+- **de-os връзка:** `/api/revalidate` (тайна = `DEOS_HELLO_SECRET` или `SITE_REVALIDATE_SECRET`) — de-os го вика при всяка промяна на цени/страници.
+- **Изображения:** проектите са WebP (`public/projects/*.webp`), лого `logo.webp` / `logo-512.png`.
+- Деплой: първо de-os + `schema.sql` + `services-v2.mjs --apply`, после сайтът: **`npm install`** (нов пакет `three`) → `npm run build`. Пълният ред: `docs/redesign-2026/MOITE-ZADACHI.md`.
 
 ## 2026-09-15 — Обща навигация на всички страници, вход в кабинета с имейл
 - **Навигация:** `NAV_LINKS` е само в `lib/constants.ts` (Footer вече не държи копие) и има „Анкета“ (/hello) и „Партньори“ (/partners). `navHref()` прави котвите `/#…` извън началната, за да водят обратно. Navbar: логото → `/` извън home, активна страница в бяло. Нов `components/layout/PageFrame.tsx` = Navbar + `<main pt-[76px]>` + Footer, без Lenis.
@@ -77,6 +89,8 @@
 - **Следващи стъпки:** сложи реален `RESEND_API_KEY`; на Hostinger конфигурирай env var; тествай изпращане; изтрий `hello` тест страницата ако не трябва.
 
 ---
+
+> ⚠ Разделите по-долу описват **стария дизайн (до 23.09.2026)** — за новия виж записа от 2026-09-23 и `docs/redesign-2026/README.md`.
 
 ## Структура на страницата (page.tsx)
 ```

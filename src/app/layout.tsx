@@ -1,114 +1,94 @@
-import type { Metadata } from "next";
-import { Inter, Montserrat } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
-import Cursor from "@/components/Cursor";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import MobileDock from "@/components/layout/MobileDock";
+import Chrome from "@/components/layout/Chrome";
+import Effects from "@/components/motion/Effects";
+import Cursor from "@/components/motion/Cursor";
+import EffectScene from "@/components/scene/EffectScene";
+import { JsonLd } from "@/components/ui/bits";
+import { organizationGraph } from "@/lib/schema";
+import { SITE } from "@/lib/site";
 
-const inter = Inter({
-	subsets: ["latin", "cyrillic"],
+// Шрифтовете са в репото (src/fonts, латиница + кирилица, OFL) — билдът не зависи
+// от Google Fonts, а браузърът не прави заявки към трети страни.
+const inter = localFont({
 	variable: "--font-inter",
 	display: "swap",
+	src: [
+		{ path: "../fonts/inter-400.woff2", weight: "400" },
+		{ path: "../fonts/inter-500.woff2", weight: "500" },
+		{ path: "../fonts/inter-600.woff2", weight: "600" },
+		{ path: "../fonts/inter-700.woff2", weight: "700" },
+	],
+	fallback: ["system-ui", "Segoe UI", "Roboto", "Arial", "sans-serif"],
 });
-
-const montserrat = Montserrat({
-	subsets: ["latin", "cyrillic"],
+const montserrat = localFont({
 	variable: "--font-montserrat",
-	weight: ["200", "300", "400", "600", "700", "900"],
 	display: "swap",
+	src: [
+		{ path: "../fonts/montserrat-600.woff2", weight: "600" },
+		{ path: "../fonts/montserrat-800.woff2", weight: "800" },
+		{ path: "../fonts/montserrat-900.woff2", weight: "900" },
+	],
+	fallback: ["Arial Black", "Arial", "sans-serif"],
 });
 
 export const metadata: Metadata = {
-	metadataBase: new URL("https://digitaleffect.bg"),
-	title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
-	description:
-		"Управление на социални мрежи, видео съдържание и дигитална стратегия за малки и средни бизнеси. Facebook, Instagram, TikTok.",
-	keywords: [
-		"дигитален маркетинг",
-		"социални мрежи",
-		"facebook управление",
-		"instagram маркетинг",
-		"tiktok",
-		"digital effect",
-		"маркетинг агенция",
-		"маркетинг агенция България",
-		"уеб дизайн",
-		"реклама facebook",
-	],
-	authors: [{ name: "Digital Effect" }],
-	alternates: {
-		canonical: "https://digitaleffect.bg",
+	metadataBase: new URL(SITE.url),
+	title: {
+		default: "Digital Effect — дигитална маркетинг агенция | Реклама, сайтове, AI",
+		template: "%s",
 	},
-	openGraph: {
-		title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
-		description: "Изграждаме система, не просто публикации.",
-		url: "https://digitaleffect.bg",
-		siteName: "Digital Effect",
-		locale: "bg_BG",
-		type: "website",
-		images: [
-			{
-				url: "/og-image.png",
-				width: 1200,
-				height: 630,
-				alt: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
-			},
+	description: SITE.description,
+	applicationName: SITE.name,
+	authors: [{ name: SITE.founder.name, url: `${SITE.url}/za-nas` }],
+	creator: SITE.name,
+	publisher: SITE.name,
+	alternates: { canonical: "/" },
+	openGraph: { type: "website", locale: "bg_BG", siteName: SITE.name, url: SITE.url },
+	twitter: { card: "summary_large_image" },
+	robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+	icons: {
+		icon: [
+			{ url: "/favicon.ico", sizes: "any" },
+			{ url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+			{ url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
 		],
+		apple: "/apple-touch-icon.png",
 	},
-	twitter: {
-		card: "summary_large_image",
-		title: "Digital Effect — Дигитален Маркетинг за Реален Растеж",
-		description: "Изграждаме система, не просто публикации.",
-		images: ["/og-image.png"],
-	},
-	robots: {
-		index: true,
-		follow: true,
-		googleBot: {
-			index: true,
-			follow: true,
-		},
-	},
+	manifest: "/site.webmanifest",
+	formatDetection: { telephone: false },
+	other: { "msapplication-TileColor": "#07080a" },
 };
 
-const jsonLd = {
-	"@context": "https://schema.org",
-	"@type": "ProfessionalService",
-	name: "Digital Effect",
-	url: "https://digitaleffect.bg",
-	logo: "https://digitaleffect.bg/logo.png",
-	description:
-		"Дигитална маркетинг агенция — управление на социални мрежи, уеб дизайн и разработка, платена реклама и дигитална стратегия.",
-	email: "hello@digitaleffect.bg",
-	areaServed: "BG",
-	availableLanguage: "Bulgarian",
-	serviceType: [
-		"Дигитален Маркетинг",
-		"Управление на Социални Мрежи",
-		"Уеб Дизайн",
-		"Уеб Разработка",
-		"Meta Ads",
-		"SEO",
-	],
-	sameAs: [
-		"https://www.facebook.com/digitalleffect/",
-		"https://www.instagram.com/digital.effect.bg",
-	],
+export const viewport: Viewport = {
+	themeColor: "#07080a",
+	colorScheme: "dark",
+	width: "device-width",
+	initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="bg" className={`${inter.variable} ${montserrat.variable}`}>
-			<link rel="icon" href="/favicon.ico" sizes="any" />
-			<link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
-			<link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
-			<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-			<link rel="manifest" href="/site.webmanifest" />
-			<body>
-				<script
-					type="application/ld+json"
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-				/>
-				<Cursor />
+		<html lang="bg" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
+			<head>
+				{/* Анимациите при скрол се включват само когато има JS — без него всичко е видимо */}
+				<script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+				<link rel="preconnect" href="https://deos.digitaleffect.bg" />
+			</head>
+			<body className="font-sans">
+				<a href="#main" className="sr-only z-[100] rounded bg-white px-4 py-2 text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Към съдържанието</a>
+				<JsonLd data={organizationGraph()} />
+				<EffectScene />
+				<Chrome><Navbar /></Chrome>
 				{children}
+				<Chrome><Footer /><MobileDock /></Chrome>
+				<div className="grain" aria-hidden />
+				<Cursor />
+				<Effects />
 			</body>
 		</html>
 	);

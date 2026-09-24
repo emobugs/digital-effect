@@ -1,8 +1,52 @@
 {
+	"_comment": "Резервен ценоразпис, ако de-os е недостъпен. Генериран от de-os lib/oferta/default-catalog.json (v2, 23.09.2026) — истината е в de-os → Сайт и цени.",
 	"source": "fallback",
 	"fetchedAt": null,
 	"currency": "€",
+	"pilot": {
+		"days": 30,
+		"headline": "Първи месец без риск",
+		"text": "Договаряме един измерим критерий преди старта. Не го ли постигнем за 30 дни — не плащате таксата ни и сте свободни да си потърсите друга агенция."
+	},
 	"services": [
+		{
+			"id": "growth_partner",
+			"sort": 5,
+			"name": "Growth Partner",
+			"short": "Реклама + SMM + сайт + AI — един екип",
+			"description": "Цялата система в един месечен план: Meta и Google реклама, социални мрежи, поддръжка и подобрения на сайта, автоматизация на запитванията и месечна стратегическа среща.",
+			"kind": "flat",
+			"category": "growth",
+			"price": {
+				"from": 790,
+				"monthly": true
+			},
+			"priceMax": null,
+			"priceNote": "Отделно същото излиза €937/мес. + €100–300 setup. Над €2 000 общ бюджет — стъпаловидният % върху разликата.",
+			"sitePrice": "790",
+			"sitePricePrefix": "",
+			"sitePriceLabel": "/ месец",
+			"badge": "Най-изгодно",
+			"highlight": true,
+			"siteFeatures": [
+				"Meta + Google реклама",
+				"SMM Growth",
+				"Сайт: поддръжка + подобрения",
+				"AI автоматизация на запитванията",
+				"Стратегическа среща всеки месец"
+			],
+			"includes": [
+				"Meta + Google реклама — управление до €2 000 общ бюджет",
+				"SMM Growth — 12 публикации, Stories, community management",
+				"Поддръжка на сайта Business + CRO подобрения",
+				"Поддръжка на автоматизации Lite",
+				"Месечна стратегическа среща + отчет",
+				"Setup на рекламните акаунти — без такса"
+			],
+			"compareAt": 937,
+			"siteVisible": true,
+			"helloVisible": true
+		},
 		{
 			"id": "meta_ads",
 			"sort": 10,
@@ -10,23 +54,55 @@
 			"short": "Facebook + Instagram Ads",
 			"description": "Платени кампании във Facebook и Instagram, насочени към запитвания и продажби — не към харесвания. Таргетиране, криейтиви, ремаркетинг, измерване на всяко запитване.",
 			"kind": "fee_budget",
+			"category": "reklama",
 			"price": {
-				"from": 100,
-				"pctOfBudget": 15,
+				"from": 170,
+				"fixed": 150,
+				"pctOfBudget": 0,
 				"monthly": true
 			},
-			"sitePrice": "100",
-			"sitePricePrefix": "от",
-			"sitePriceLabel": "/ месец + 15% от бюджета",
+			"priceMax": null,
+			"priceNote": "€150 фиксирано + стъпаловиден % от бюджета: 10% до €1 000 · 8% до €5 000 · 6% до €10 000 · 5% над €10 000.",
+			"sitePrice": "170",
+			"sitePricePrefix": "Управление от",
+			"sitePriceLabel": "/ мес. + setup €50–150",
 			"badge": null,
+			"highlight": false,
 			"siteFeatures": [
-				"Setup и структура на кампании",
-				"Таргетиране и аудитории",
-				"Криейтиви — визии и видео",
-				"Ремаркетинг",
-				"Meta Pixel + събития — цена на запитване",
+				"Кампании за запитвания и продажби, не за харесвания",
+				"6 рекламни криейтива месечно — визии и видео",
+				"Meta Pixel + събития — цена на всяко запитване",
+				"Таргетиране по град и ремаркетинг",
 				"Седмичен отчет на човешки език"
 			],
+			"pctTiers": [
+				{
+					"upTo": 1000,
+					"pct": 10
+				},
+				{
+					"upTo": 5000,
+					"pct": 8
+				},
+				{
+					"upTo": 10000,
+					"pct": 6
+				},
+				{
+					"upTo": null,
+					"pct": 5
+				}
+			],
+			"setup": {
+				"min": 50,
+				"max": 150
+			},
+			"budget": {
+				"min": 200,
+				"max": 20000,
+				"step": 50,
+				"default": 500
+			},
 			"siteVisible": true,
 			"helloVisible": true
 		},
@@ -37,166 +113,462 @@
 			"short": "Search + Performance Max",
 			"description": "Реклама в Google за хора, които вече търсят вашата услуга — търсене, Maps и Performance Max. Ключови думи, негативни думи, проследяване на конверсии.",
 			"kind": "fee_budget",
+			"category": "reklama",
 			"price": {
-				"from": 100,
-				"pctOfBudget": 15,
+				"from": 170,
+				"fixed": 150,
+				"pctOfBudget": 0,
 				"monthly": true
 			},
-			"sitePrice": "100",
-			"sitePricePrefix": "от",
-			"sitePriceLabel": "/ месец + 15% от бюджета",
+			"priceMax": null,
+			"priceNote": "€150 фиксирано + стъпаловиден % от бюджета: 10% до €1 000 · 8% до €5 000 · 6% до €10 000 · 5% над €10 000.",
+			"sitePrice": "170",
+			"sitePricePrefix": "Управление от",
+			"sitePriceLabel": "/ мес. + setup €50–150",
 			"badge": null,
+			"highlight": false,
 			"siteFeatures": [
-				"Search + Performance Max",
-				"Ключови и негативни думи",
-				"Проследяване на конверсии",
-				"Google Business профил",
-				"Седмичен отчет"
+				"Google Търсене, Maps и Performance Max",
+				"Ключови и негативни думи — всяка седмица",
+				"Проследяване на обаждания, форми и поръчки",
+				"Свързване с Google Business профила",
+				"Седмичен отчет на човешки език"
 			],
-			"siteVisible": false,
+			"pctTiers": [
+				{
+					"upTo": 1000,
+					"pct": 10
+				},
+				{
+					"upTo": 5000,
+					"pct": 8
+				},
+				{
+					"upTo": 10000,
+					"pct": 6
+				},
+				{
+					"upTo": null,
+					"pct": 5
+				}
+			],
+			"setup": {
+				"min": 50,
+				"max": 150
+			},
+			"budget": {
+				"min": 200,
+				"max": 20000,
+				"step": 50,
+				"default": 500
+			},
+			"siteVisible": true,
 			"helloVisible": true
 		},
 		{
 			"id": "smm",
 			"sort": 30,
-			"name": "Социални мрежи (SMM)",
-			"short": "Управление на профили",
-			"description": "Съдържание, дизайн, копирайтинг и публикуване във Facebook, Instagram и TikTok — синхронизирано с рекламите и промоциите ви.",
+			"name": "Социални мрежи",
+			"short": "Start · Growth · Scale",
+			"description": "Съдържание, дизайн, текстове и публикуване във Facebook, Instagram и TikTok — синхронизирано с рекламите и промоциите ви. Всяка публикация има цел.",
 			"kind": "choice",
+			"category": "smm",
 			"price": {
-				"from": 100,
+				"from": 199,
 				"monthly": true
 			},
-			"sitePrice": "100",
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "199",
 			"sitePricePrefix": "от",
 			"sitePriceLabel": "/ месец",
 			"badge": null,
+			"highlight": false,
 			"siteFeatures": [
-				"Facebook + Instagram (или TikTok)",
-				"8 или 12 публикации / месец",
-				"Копирайтинг + графичен дизайн",
+				"8, 12 или 16 публикации месечно",
+				"Текст + дизайн + публикуване",
+				"Stories и Reels (Growth / Scale)",
 				"Community management",
-				"Месечна стратегия и отчет",
-				"Reels / кратки видеа"
+				"Месечна стратегия и отчет"
 			],
 			"options": [
 				{
-					"id": "smm8",
-					"label": "SMM — 8 поста / месец",
-					"price": 100
+					"id": "smm_start",
+					"label": "SMM Start — 8 публикации",
+					"price": 199,
+					"desc": "8 публикации месечно във Facebook + Instagram — текст и дизайн от нас.",
+					"features": [
+						"8 публикации / месец",
+						"Facebook + Instagram",
+						"Текст + графичен дизайн",
+						"Публикуване по календар"
+					],
+					"popular": false,
+					"badge": null
 				},
 				{
-					"id": "smm12",
-					"label": "SMM — 12 поста / месец",
-					"price": 140
+					"id": "smm_growth",
+					"label": "SMM Growth — 12 публикации",
+					"price": 299,
+					"desc": "12 публикации, Stories, отговори на коментари и съобщения, месечна стратегия и отчет.",
+					"features": [
+						"12 публикации / месец",
+						"Stories",
+						"Community management — коментари и съобщения",
+						"Месечна стратегия и отчет"
+					],
+					"popular": true,
+					"badge": null
+				},
+				{
+					"id": "smm_scale",
+					"label": "SMM Scale — 16 публикации + Reels",
+					"price": 449,
+					"desc": "16 публикации, до 4 Reels, до 3 канала и community management — поемаме цялата работа.",
+					"features": [
+						"16 публикации / месец",
+						"До 4 Reels / кратки видеа",
+						"До 3 канала (FB, IG, TikTok)",
+						"Поемаме цялата работа по профилите"
+					],
+					"popular": false,
+					"badge": null
 				}
 			],
 			"siteVisible": true,
 			"helloVisible": true
 		},
 		{
-			"id": "site_support",
+			"id": "web_landing",
 			"sort": 40,
-			"name": "Поддръжка на сайт",
-			"short": "Базова / Стандартна / Разширена",
-			"description": "Наблюдение, бекъпи, обновявания и промени по сайта — на три нива според нуждата.",
-			"kind": "tiers",
+			"name": "Landing страница",
+			"short": "Една страница, една цел",
+			"description": "Една продаваща страница за конкретна услуга или кампания — създадена да превръща посетителите в запитвания.",
+			"kind": "one_time",
+			"category": "web",
 			"price": {
-				"from": 30,
-				"monthly": true
+				"from": 449,
+				"monthly": false
 			},
-			"sitePrice": "30",
-			"sitePricePrefix": "от",
-			"sitePriceLabel": "/ месец",
+			"priceMax": 699,
+			"priceNote": null,
+			"sitePrice": "449–699",
+			"sitePricePrefix": "",
+			"sitePriceLabel": "еднократно",
 			"badge": null,
-			"siteFeatures": [],
-			"tiers": [
-				{
-					"label": "Базова",
-					"price": 30
-				},
-				{
-					"label": "Стандартна",
-					"price": 40
-				},
-				{
-					"label": "Разширена",
-					"price": 60
-				}
+			"highlight": false,
+			"siteFeatures": [
+				"Една страница с ясна цел",
+				"Текст, който продава",
+				"Форма + проследяване",
+				"Готова за реклама"
 			],
-			"siteVisible": false,
-			"helloVisible": true
+			"siteVisible": true,
+			"helloVisible": false
 		},
 		{
 			"id": "website",
-			"sort": 50,
-			"name": "Уеб сайт",
-			"short": "Дизайн & разработка",
-			"description": "Модерен уебсайт или landing page, оптимизиран за конверсия. От дизайн до деплой — и поддръжка след това, ако е нужна.",
+			"sort": 42,
+			"name": "Бизнес уебсайт",
+			"short": "4–6 основни страници",
+			"description": "Сайт на бизнеса с 4–6 основни страници — дизайн, текстове, SEO основа и проследяване на запитванията.",
 			"kind": "one_time",
+			"category": "web",
 			"price": {
-				"from": 400,
+				"from": 799,
 				"monthly": false
 			},
-			"sitePrice": "400",
+			"priceMax": 899,
+			"priceNote": null,
+			"sitePrice": "799–899",
 			"sitePricePrefix": "",
-			"sitePriceLabel": " / поддръжка от €30",
-			"badge": "−50% · Остават 4/5",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
 			"siteFeatures": [
-				"Custom дизайн и разработка",
-				"Landing page или multi-page сайт",
-				"Мобилна оптимизация",
-				"SEO основи",
-				"Интеграция с форми и инструменти",
-				"Поддръжка от €30 / месец"
+				"4–6 основни страници",
+				"Индивидуален дизайн, не шаблон",
+				"Мобилна версия и скорост",
+				"SEO основа + структурирани данни",
+				"Форми и проследяване на запитванията"
 			],
 			"siteVisible": true,
 			"helloVisible": true
 		},
 		{
-			"id": "chatko",
-			"sort": 60,
-			"name": "Chatko — AI асистент",
-			"short": "AI чат за сайта и Messenger",
-			"description": "AI асистент, който отговаря на клиентите ви 24/7 на сайта и в Messenger, събира запитвания и записва часове — обучен върху вашите услуги и цени.",
-			"kind": "flat",
+			"id": "web_custom",
+			"sort": 44,
+			"name": "Custom уебсайт",
+			"short": "По-големи проекти",
+			"description": "По-голям сайт с индивидуална структура, анимации и интеграции — за бизнеси, които искат да изпъкнат.",
+			"kind": "one_time",
+			"category": "web",
 			"price": {
-				"from": 150,
+				"from": 1190,
+				"monthly": false
+			},
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "1 190",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
+			"siteFeatures": [
+				"Индивидуална структура и анимации",
+				"Интеграции (резервации, CRM, плащания)",
+				"Повече страници и съдържание"
+			],
+			"siteVisible": true,
+			"helloVisible": false
+		},
+		{
+			"id": "web_advanced",
+			"sort": 46,
+			"name": "Многоезичен / advanced сайт",
+			"short": "Езици, интеграции, функционалност",
+			"description": "Многоезичен сайт или сайт със специфична функционалност — резервации, каталози, портали, интеграции със системи.",
+			"kind": "one_time",
+			"category": "web",
+			"price": {
+				"from": 1490,
+				"monthly": false
+			},
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "1 490",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
+			"siteFeatures": [
+				"Няколко езика + hreflang",
+				"Custom функционалност",
+				"Интеграции със системи (booking, склад, CRM)"
+			],
+			"siteVisible": true,
+			"helloVisible": false
+		},
+		{
+			"id": "site_support",
+			"sort": 60,
+			"name": "Поддръжка на сайт",
+			"short": "Basic · Business · Care",
+			"description": "Наблюдение, бекъпи, обновявания и промени по сайта — на три нива според нуждата.",
+			"kind": "tiers",
+			"category": "web",
+			"price": {
+				"from": 49,
 				"monthly": true
 			},
-			"sitePrice": "150",
-			"sitePricePrefix": "",
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "49",
+			"sitePricePrefix": "от",
 			"sitePriceLabel": "/ месец",
 			"badge": null,
-			"siteFeatures": [],
+			"highlight": false,
+			"siteFeatures": [
+				"Обновявания, бекъпи, сигурност",
+				"Дребни промени по съдържанието",
+				"Приоритетна поддръжка (Care)"
+			],
+			"tiers": [
+				{
+					"label": "Basic",
+					"price": 49,
+					"desc": "Обновявания, бекъпи, наблюдение дали сайтът работи, сигурност.",
+					"features": [
+						"Обновявания и бекъпи",
+						"Uptime наблюдение",
+						"Сигурност и SSL"
+					],
+					"popular": false
+				},
+				{
+					"label": "Business",
+					"price": 79,
+					"desc": "Всичко от Basic + дребни промени и обновяване на съдържание по ваш списък.",
+					"features": [
+						"Всичко от Basic",
+						"Дребни промени по дизайна",
+						"Обновяване на текстове, цени, снимки"
+					],
+					"popular": true
+				},
+				{
+					"label": "Care",
+					"price": 129,
+					"desc": "Всичко от Business + приоритетна поддръжка и повече работа всеки месец.",
+					"features": [
+						"Всичко от Business",
+						"Приоритетна поддръжка",
+						"Повече работни часове месечно"
+					],
+					"popular": false
+				}
+			],
 			"siteVisible": false,
+			"helloVisible": true
+		},
+		{
+			"id": "ai_chatbot",
+			"sort": 70,
+			"name": "AI чатбот / асистент за запитвания",
+			"short": "Сайт, Messenger, квалификация",
+			"description": "AI асистент, обучен върху вашите услуги и цени — отговаря 24/7, квалифицира запитванията и ги праща при вас.",
+			"kind": "one_time",
+			"category": "ai",
+			"price": {
+				"from": 290,
+				"monthly": false
+			},
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "290",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
+			"siteFeatures": [
+				"Отговаря 24/7 на сайта и в чата",
+				"Обучен върху вашите услуги и цени",
+				"Квалифицира запитванията",
+				"Известие при всеки лийд"
+			],
+			"siteVisible": true,
 			"helloVisible": true
 		},
 		{
 			"id": "automation",
-			"sort": 70,
-			"name": "AI автоматизация",
-			"short": "Самостоятелна услуга",
-			"description": "Чатботове, AI агенти, email sequences и workflow автоматизация за бизнеси, които искат да работят по-умно.",
-			"kind": "quote",
+			"sort": 72,
+			"name": "Автоматизация на процес",
+			"short": "Make · n8n · API",
+			"description": "Автоматизация на повтаряща се работа — известия, документи, прехвърляне на данни между системи.",
+			"kind": "one_time",
+			"category": "ai",
 			"price": {
-				"from": null,
+				"from": 390,
 				"monthly": false
 			},
-			"sitePrice": null,
-			"sitePricePrefix": "",
-			"sitePriceLabel": "По запитване",
-			"badge": "Ново",
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "390",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
 			"siteFeatures": [
-				"AI чатбот за сайт / Messenger",
-				"Автоматични email sequences",
-				"CRM setup и интеграция",
-				"Lead capture автоматизация",
-				"Workflow автоматизация (n8n / Make)",
-				"Месечна поддръжка и оптимизация"
+				"Make / n8n / API workflow",
+				"Известия и документи без ръчна работа",
+				"Данни между системите ви"
 			],
 			"siteVisible": true,
 			"helloVisible": true
+		},
+		{
+			"id": "crm_automation",
+			"sort": 74,
+			"name": "CRM и автоматизация на запитванията",
+			"short": "DE-Hub · pipelines · известия",
+			"description": "CRM, pipelines и известия от всички канали на едно място (DE-Hub) — нито едно запитване не се губи.",
+			"kind": "one_time",
+			"category": "ai",
+			"price": {
+				"from": 790,
+				"monthly": false
+			},
+			"priceMax": 1490,
+			"priceNote": null,
+			"sitePrice": "790–1 490+",
+			"sitePricePrefix": "",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
+			"siteFeatures": [
+				"Всички запитвания на едно място (DE-Hub)",
+				"Етапи на сделката и напомняния",
+				"Известия от всички канали",
+				"Интеграции със сайта и рекламите"
+			],
+			"siteVisible": true,
+			"helloVisible": false
+		},
+		{
+			"id": "ai_agent",
+			"sort": 76,
+			"name": "Custom AI агент",
+			"short": "Автоматизации от А до Я",
+			"description": "По-сложна custom система — AI агент, който върши цял процес вместо човек: от запитването до офертата.",
+			"kind": "one_time",
+			"category": "ai",
+			"price": {
+				"from": 1490,
+				"monthly": false
+			},
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "1 490",
+			"sitePricePrefix": "от",
+			"sitePriceLabel": "еднократно",
+			"badge": null,
+			"highlight": false,
+			"siteFeatures": [
+				"Цял процес без ръчна работа",
+				"Обучен върху вашите данни",
+				"Интеграции със системите ви"
+			],
+			"siteVisible": true,
+			"helloVisible": false
+		},
+		{
+			"id": "automation_support",
+			"sort": 78,
+			"name": "Поддръжка на автоматизации",
+			"short": "Според системата",
+			"description": "Наблюдение, поправки и развитие на чатботове и автоматизации — според системата и натоварването.",
+			"kind": "tiers",
+			"category": "ai",
+			"price": {
+				"from": 59,
+				"monthly": true
+			},
+			"priceMax": null,
+			"priceNote": null,
+			"sitePrice": "59–199",
+			"sitePricePrefix": "",
+			"sitePriceLabel": "/ месец",
+			"badge": null,
+			"highlight": false,
+			"siteFeatures": [
+				"Наблюдение и поправки",
+				"Подобрения всеки месец"
+			],
+			"tiers": [
+				{
+					"label": "Lite",
+					"price": 59,
+					"desc": "Наблюдение и поправки на една система.",
+					"features": [],
+					"popular": false
+				},
+				{
+					"label": "Standard",
+					"price": 119,
+					"desc": "Наблюдение, поправки и малки подобрения всеки месец.",
+					"features": [],
+					"popular": true
+				},
+				{
+					"label": "Pro",
+					"price": 199,
+					"desc": "Няколко системи, приоритет и развитие.",
+					"features": [],
+					"popular": false
+				}
+			],
+			"siteVisible": true,
+			"helloVisible": false
 		}
 	]
 }

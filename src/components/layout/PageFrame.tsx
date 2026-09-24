@@ -1,18 +1,6 @@
-"use client";
-
-// ── Обвивка за вътрешните страници (/hello, /partners/*, /radar, /privacy) ──
-// Същите Navbar и Footer като началната, за да има навигация и път назад
-// отвсякъде. Navbar-ът е fixed 76px → отместваме съдържанието. Без Lenis —
-// тези страници са форми, native скролът е по-предвидим.
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/sections/Footer";
-
+// ── Обвивка за страниците с формуляри (/hello, /partners/*, /radar, /privacy) ──
+// Navbar, Footer и 3D сцената са в root layout-а; тук остава само непрозрачният
+// фон (сцената не се рендерира зад тези страници) и отместването под навигацията.
 export default function PageFrame({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-	return (
-		<>
-			<Navbar />
-			<main className={`min-h-screen bg-dark-obsidian text-gray-100 pt-[76px] ${className}`}>{children}</main>
-			<Footer />
-		</>
-	);
+	return <main id="main" className={`relative z-10 min-h-screen bg-dark-obsidian pt-[72px] text-gray-100 ${className}`}>{children}</main>;
 }

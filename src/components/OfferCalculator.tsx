@@ -7,6 +7,7 @@
 // слайдери, чекбокси, броячи, еднократни; upsell със задраскана цена.
 // Клиентът вижда само цени и условия — нищо вътрешно.
 // ═══════════════════════════════════════════════════════════════════════════
+import { feeFor } from "@/lib/fees";
 import { useMemo, useState } from "react";
 import { normalizeOffer, type OfferData } from "@/lib/offer-types";
 import type { OfferSelection, AcceptedInfo } from "@/lib/offer-selection";
@@ -81,7 +82,9 @@ export default function OfferCalculator({ data, token, accepted = null }: { data
 		if (p.budget) {
 			const b = budgets[p.id] ?? p.budget.default;
 			budgetSum += b;
-			if (p.fee.pctOfBudget) { fee += (p.fee.pctOfBudget / 100) * b; label += ` (${EUR(p.fee.fixed)} + ${p.fee.pctOfBudget}% × ${EUR(b)})`; }
+			// Същата формула като de-os (lib/oferta/fees.js) — стъпаловиден % или стар плосък
+			if (p.fee.pctTiers?.length) { fee = feeFor(p.fee, b); label += ` (${EUR(p.fee.fixed)} + стъпаловиден % от ${EUR(b)})`; }
+			else if (p.fee.pctOfBudget) { fee = Math.round(feeFor(p.fee, b)); label += ` (${EUR(p.fee.fixed)} + ${p.fee.pctOfBudget}% × ${EUR(b)})`; }
 		}
 		rows.push([label, fee]);
 	}
@@ -133,7 +136,7 @@ export default function OfferCalculator({ data, token, accepted = null }: { data
 										{p.subtitle && <div className={cx("text-[11px] mt-0.5", MUTED)}>{p.subtitle}</div>}
 									</div>
 									<div className="text-right flex-shrink-0">
-										{p.oldFixed != null && p.oldFixed !== p.fee.fixed && <div className="text-xs text-gray-500 line-through">{EUR(p.oldFixed)}{p.fee.pctOfBudget ? ` + ${p.fee.pctOfBudget}%` : ""}</div>}
+										{p.oldFixed != null && p.oldFixed !== p.fee.fixed && <div className="text-xs text-gray-500 line-through">{EUR(p.oldFixed)}{p.fee.pctTiers?.length ? " + %" : p.fee.pctOfBudget ? ` + ${p.fee.pctOfBudget}%` : ""}</div>}
 										<div className={cx("font-bold text-[15px]", ACCENT)}>{p.priceLabel}</div>
 										{p.discountPct ? <div className="text-[10px] text-emerald-400 font-semibold">−{p.discountPct}%</div> : null}
 									</div>

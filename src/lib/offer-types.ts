@@ -20,7 +20,8 @@ export interface OfferPackage {
 	subtitle?: string;
 	priceLabel: string;
 	totalRowLabel?: string;
-	fee: { fixed: number; pctOfBudget?: number };
+	/** pctTiers = стъпаловиден % (09.2026); без него — стар плосък pctOfBudget */
+	fee: { fixed: number; pctOfBudget?: number; pctTiers?: { upTo: number | null; pct: number }[] | null };
 	oldFixed?: number;
 	discountPct?: number;
 	optional?: boolean;
